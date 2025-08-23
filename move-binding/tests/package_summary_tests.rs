@@ -19,7 +19,7 @@ fn test_generate_package_summaries() {
     };
 
     let c2 = {
-        let pkg_path = std::path::Path::new("../package_summaries");
+        let pkg_path = std::path::Path::new("./tests/package_summaries");
         let summary = move_binding::package_summaries_parser::parse_summaries(pkg_path).unwrap();
         let stream = LocalCodegen::expand(&summary, &alias, &base_path, Some(2)).unwrap();
 
