@@ -2,7 +2,6 @@ use crate::package_id_resolver::PackageIdResolver;
 use crate::SuiNetwork;
 use fastcrypto::encoding::{Base64, Encoding};
 use move_binary_format::normalized::Module;
-use move_binary_format::CompiledModule;
 use move_core_types::account_address::AccountAddress;
 use reqwest::header::CONTENT_TYPE;
 use serde_json::{json, Value};
@@ -47,11 +46,12 @@ impl ModuleProvider for MoveModuleProvider {
         let module_bytes = Base64::decode(&module_bcs).unwrap();
         let module_map: BTreeMap<String, Vec<u8>> = bcs::from_bytes(&module_bytes).unwrap();
 
-        let module_map = module_map
+        let pool = &mut move_binary_format::normalized::RcPool::new();
+        let module_map: BTreeMap<_, _> = module_map
             .iter()
             .map(|(name, bytes)| {
-                let module = CompiledModule::deserialize_with_defaults(bytes)?;
-                let normalized = Module::new(&module);
+                let module = move_binary_format::CompiledModule::deserialize_with_defaults(bytes)?;
+                let normalized = Module::new(pool, &module, false);
                 Ok::<_, anyhow::Error>((name.clone(), normalized))
             })
             .collect::<Result<_, _>>()?;
@@ -84,7 +84,7 @@ impl ModuleProvider for MoveModuleProvider {
 }
 
 pub struct Package {
-    pub module_map: BTreeMap<String, Module>,
+    pub module_map: BTreeMap<String, Module<move_binary_format::normalized::RcIdentifier>>,
     pub type_origin_table: HashMap<String, HashMap<String, AccountAddress>>,
     pub version: u64,
 }

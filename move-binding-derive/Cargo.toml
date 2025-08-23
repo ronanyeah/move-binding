@@ -15,8 +15,8 @@ syn = "^2.0.46"
 quote = "^1.0.35"
 proc-macro2 = "^1.0.74"
 serde = { workspace = true, features = ["derive"] }
-sui-sdk-types = { git = "https://github.com/mystenlabs/sui-rust-sdk", features = ["serde"], rev="f0c8068"}
-sui-transaction-builder = { git = "https://github.com/mystenlabs/sui-rust-sdk", rev="f0c8068"}
+sui-sdk-types = { git = "https://github.com/ronanyeah/sui-rust-sdk", features = ["serde"], branch = "bump" }
+sui-transaction-builder = { git = "https://github.com/ronanyeah/sui-rust-sdk", branch = "bump" }
 move-binding = { path = "../move-binding" }
 move-types = { path = "../move-types" }
 bcs = "0.1.6"

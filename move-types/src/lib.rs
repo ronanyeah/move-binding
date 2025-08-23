@@ -5,7 +5,6 @@ use serde::Serialize;
 use std::str::FromStr;
 pub use sui_sdk_types::Address;
 pub use sui_sdk_types::Identifier;
-pub use sui_sdk_types::ObjectId;
 pub use sui_sdk_types::StructTag;
 pub use sui_sdk_types::TypeTag;
 
@@ -73,16 +72,6 @@ impl MoveType for bool {
         TypeTag::Bool
     }
 }
-impl MoveType for ObjectId {
-    fn type_() -> TypeTag {
-        TypeTag::Struct(Box::new(StructTag {
-            address: Address::TWO,
-            module: Identifier::from_str("object").unwrap(),
-            name: Identifier::from_str("UID").unwrap(),
-            type_params: vec![],
-        }))
-    }
-}
 
 impl MoveType for String {
     fn type_() -> TypeTag {
@@ -119,5 +108,5 @@ impl<T: MoveType> MoveType for Vec<T> {
 }
 
 pub trait Key: MoveStruct {
-    fn id(&self) -> &ObjectId;
+    fn id(&self) -> &Address;
 }

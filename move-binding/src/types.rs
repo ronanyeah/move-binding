@@ -9,7 +9,7 @@ pub trait ToRustType {
     fn to_arg_type(&self) -> String;
 }
 
-impl ToRustType for Type {
+impl ToRustType for Type<move_binary_format::normalized::RcIdentifier> {
     fn to_rust_type(&self) -> String {
         match self {
             Self::Bool => "bool".to_string(),
@@ -21,14 +21,14 @@ impl ToRustType for Type {
             Self::U256 => "move_types::U256".to_string(),
             Self::Address => "Address".to_string(),
             Self::Signer => "Address".to_string(),
-            t @ Self::Struct { .. } => try_resolve_known_types(t),
+            t @ Self::Datatype { .. } => try_resolve_known_types(t),
             Self::Vector(t) => {
                 format!("Vec<{}>", t.to_rust_type())
             }
-            Self::Reference(t) => {
+            Self::Reference(false, t) => {
                 format!("&'static {}", t.to_rust_type())
             }
-            Self::MutableReference(t) => {
+            Self::Reference(true, t) => {
                 format!("&'static mut {}", t.to_rust_type())
             }
             Self::TypeParameter(index) => format!("T{index}"),
@@ -37,17 +37,17 @@ impl ToRustType for Type {
 
     fn is_ref(&self) -> bool {
         match self {
-            Self::Reference(_) | Self::MutableReference(_) => true,
+            Self::Reference(_, _) => true,
             _ => false,
         }
     }
 
     fn to_arg_type(&self) -> String {
         match self {
-            Self::Reference(t) => {
+            Self::Reference(false, t) => {
                 format!("Ref<'a, {}>", t.to_rust_type())
             }
-            Self::MutableReference(t) => {
+            Self::Reference(true, t) => {
                 format!("MutRef<'a, {}>", t.to_rust_type())
             }
             _ => format!("Arg<{}>", self.to_rust_type()),
@@ -55,14 +55,13 @@ impl ToRustType for Type {
     }
 }
 
-fn try_resolve_known_types(_type: &Type) -> String {
-    if let Type::Struct {
-        address,
-        module,
-        name,
-        type_arguments,
-    } = _type
-    {
+fn try_resolve_known_types(_type: &Type<move_binary_format::normalized::RcIdentifier>) -> String {
+    if let Type::Datatype(datatype) = _type {
+        let address = &datatype.module.address;
+        let module = &datatype.module.name;
+        let name = &datatype.name;
+        let type_arguments = &datatype.type_arguments;
+
         match (address, module.as_str(), name.as_str()) {
             (&AccountAddress::ONE, "type_name", "TypeName") => "String".to_string(),
             (&AccountAddress::ONE, "string", "String") => "String".to_string(),
@@ -76,12 +75,12 @@ fn try_resolve_known_types(_type: &Type) -> String {
             _ => {
                 let cache = BINDING_REGISTRY.read().unwrap();
 
-                let package_path =  cache.get(address).cloned();
+                let package_path = cache.get(address).cloned();
                 drop(cache); // Release read lock
 
-                let type_ = if let Some(package_path) = package_path{
+                let type_ = if let Some(package_path) = package_path {
                     format!("{package_path}::{module}::{name}")
-                }else{
+                } else {
                     format!("{module}::{name}")
                 };
 
