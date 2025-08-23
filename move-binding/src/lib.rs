@@ -1,6 +1,7 @@
 pub mod move_codegen;
 mod package_id_resolver;
 mod package_provider;
+pub mod package_summaries_parser;
 mod types;
 
 #[derive(Copy, Clone)]
