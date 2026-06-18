@@ -2,116 +2,48 @@
 source: move-binding/tests/snapshot_tests.rs
 expression: pretty
 ---
+#[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 pub mod wal {
     pub const PACKAGE_VERSION: u64 = 1u64;
     pub mod wal {
-        use std::str::FromStr;
         use move_binding_derive::{MoveStruct, Key};
-        use move_types::{MoveType, Address, Identifier, ObjectId};
+        use move_types::{MoveType, Address, Identifier};
         use move_types::functions::{Arg, Ref, MutRef};
-        pub const PACKAGE_ID: Address = Address::new([
-            130u8, 112u8, 254u8, 183u8, 55u8, 94u8, 238u8, 53u8, 94u8, 100u8, 253u8,
-            182u8, 156u8, 80u8, 171u8, 182u8, 181u8, 249u8, 57u8, 58u8, 114u8, 40u8,
-            131u8, 193u8, 207u8, 69u8, 248u8, 226u8, 96u8, 72u8, 129u8, 10u8,
-        ]);
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x8270feb7375eee355e64fdb69c50abb6b5f9393a722883c1cf45f8e26048810a",
+        );
         pub const MODULE_NAME: &str = "wal";
-        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
-        pub struct ProtectedTreasury {
-            pub id: ObjectId,
-        }
-        impl ProtectedTreasury {
-            pub const TYPE_ORIGIN_ID: Address = Address::new([
-                130u8, 112u8, 254u8, 183u8, 55u8, 94u8, 238u8, 53u8, 94u8, 100u8, 253u8,
-                182u8, 156u8, 80u8, 171u8, 182u8, 181u8, 249u8, 57u8, 58u8, 114u8, 40u8,
-                131u8, 193u8, 207u8, 69u8, 248u8, 226u8, 96u8, 72u8, 129u8, 10u8,
-            ]);
-        }
         #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
-        pub struct TreasuryCapKey {
-            pub dummy_field: bool,
-        }
-        impl TreasuryCapKey {
-            pub const TYPE_ORIGIN_ID: Address = Address::new([
-                130u8, 112u8, 254u8, 183u8, 55u8, 94u8, 238u8, 53u8, 94u8, 100u8, 253u8,
-                182u8, 156u8, 80u8, 171u8, 182u8, 181u8, 249u8, 57u8, 58u8, 114u8, 40u8,
-                131u8, 193u8, 207u8, 69u8, 248u8, 226u8, 96u8, 72u8, 129u8, 10u8,
-            ]);
-        }
-        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x8270feb7375eee355e64fdb69c50abb6b5f9393a722883c1cf45f8e26048810a"
+        )]
         pub struct WAL {
             pub dummy_field: bool,
         }
-        impl WAL {
-            pub const TYPE_ORIGIN_ID: Address = Address::new([
-                130u8, 112u8, 254u8, 183u8, 55u8, 94u8, 238u8, 53u8, 94u8, 100u8, 253u8,
-                182u8, 156u8, 80u8, 171u8, 182u8, 181u8, 249u8, 57u8, 58u8, 114u8, 40u8,
-                131u8, 193u8, 207u8, 69u8, 248u8, 226u8, 96u8, 72u8, 129u8, 10u8,
-            ]);
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+        #[move_struct(
+            origin = "0x8270feb7375eee355e64fdb69c50abb6b5f9393a722883c1cf45f8e26048810a"
+        )]
+        pub struct ProtectedTreasury {
+            pub id: Address,
         }
-        pub fn borrow_cap<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: Ref<'a, crate::wal::wal::ProtectedTreasury>,
-        ) -> Ref<'a, crate::sui::coin::TreasuryCap<crate::wal::wal::WAL>> {
-            let p0 = p0.resolve_arg(builder);
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_str(MODULE_NAME).unwrap(),
-                        Identifier::from_str("borrow_cap").unwrap(),
-                        vec![],
-                    ),
-                    vec![p0.into()],
-                )
-                .into()
-        }
-        pub fn borrow_cap_mut<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: MutRef<'a, crate::wal::wal::ProtectedTreasury>,
-        ) -> MutRef<'a, crate::sui::coin::TreasuryCap<crate::wal::wal::WAL>> {
-            let p0 = p0.resolve_arg(builder);
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_str(MODULE_NAME).unwrap(),
-                        Identifier::from_str("borrow_cap_mut").unwrap(),
-                        vec![],
-                    ),
-                    vec![p0.into()],
-                )
-                .into()
-        }
-        pub fn burn<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: MutRef<'a, crate::wal::wal::ProtectedTreasury>,
-            p1: Arg<crate::sui::coin::Coin<crate::wal::wal::WAL>>,
-        ) {
-            let p0 = p0.resolve_arg(builder);
-            let p1 = p1.resolve_arg(builder);
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_str(MODULE_NAME).unwrap(),
-                        Identifier::from_str("burn").unwrap(),
-                        vec![],
-                    ),
-                    vec![p0.into(), p1.into()],
-                );
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x8270feb7375eee355e64fdb69c50abb6b5f9393a722883c1cf45f8e26048810a"
+        )]
+        pub struct TreasuryCapKey {
+            pub dummy_field: bool,
         }
         pub fn init<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Arg<crate::wal::wal::WAL>,
         ) {
-            let p0 = p0.resolve_arg(builder);
             builder
                 .move_call(
                     sui_transaction_builder::Function::new(
                         PACKAGE_ID,
-                        Identifier::from_str(MODULE_NAME).unwrap(),
-                        Identifier::from_str("init").unwrap(),
-                        vec![],
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("init"),
                     ),
                     vec![p0.into()],
                 );
@@ -120,18 +52,1746 @@ pub mod wal {
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, crate::wal::wal::ProtectedTreasury>,
         ) -> Arg<u64> {
-            let p0 = p0.resolve_arg(builder);
             builder
                 .move_call(
                     sui_transaction_builder::Function::new(
                         PACKAGE_ID,
-                        Identifier::from_str(MODULE_NAME).unwrap(),
-                        Identifier::from_str("total_supply").unwrap(),
-                        vec![],
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("total_supply"),
                     ),
                     vec![p0.into()],
                 )
                 .into()
+        }
+        pub fn burn<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::wal::wal::ProtectedTreasury>,
+            p1: Arg<crate::wal::sui::coin::Coin<crate::wal::wal::WAL>>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("burn"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                );
+        }
+        pub fn borrow_cap<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::wal::wal::ProtectedTreasury>,
+        ) -> Ref<'a, crate::wal::sui::coin::TreasuryCap<crate::wal::wal::WAL>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("borrow_cap"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn borrow_cap_mut<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::wal::wal::ProtectedTreasury>,
+        ) -> MutRef<'a, crate::wal::sui::coin::TreasuryCap<crate::wal::wal::WAL>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("borrow_cap_mut"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+    }
+    pub mod move_std {
+        pub mod ascii {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "ascii";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct String {
+                pub bytes: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct Char {
+                pub byte: u8,
+            }
+        }
+        pub mod bit_vector {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "bit_vector";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct BitVector {
+                pub length: u64,
+                pub bit_field: Vec<bool>,
+            }
+        }
+        pub mod fixed_point32 {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "fixed_point32";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct FixedPoint32 {
+                pub value: u64,
+            }
+        }
+        pub mod internal {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "internal";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct Permit<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod option {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "option";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct Option<T0> {
+                pub vec: Vec<T0>,
+            }
+        }
+        pub mod string {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "string";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct String {
+                pub bytes: Vec<u8>,
+            }
+        }
+        pub mod type_name {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "type_name";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct TypeName {
+                pub name: String,
+            }
+        }
+        pub mod uq32_32 {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "uq32_32";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct UQ32_32 {
+                pub pos0: u64,
+            }
+        }
+        pub mod uq64_64 {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+            );
+            pub const MODULE_NAME: &str = "uq64_64";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000001"
+            )]
+            pub struct UQ64_64 {
+                pub pos0: u128,
+            }
+        }
+    }
+    pub mod sui {
+        pub mod accumulator {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "accumulator";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AccumulatorRoot {
+                pub id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct U128 {
+                pub value: u128,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Key<T0> {
+                pub address: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod accumulator_metadata {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "accumulator_metadata";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct OwnerKey {
+                pub owner: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Owner {
+                pub balances: crate::wal::sui::bag::Bag,
+                pub owner: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct MetadataKey<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Metadata<T0> {
+                pub fields: crate::wal::sui::bag::Bag,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AccumulatorObjectCountKey {
+                pub dummy_field: bool,
+            }
+        }
+        pub mod accumulator_settlement {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "accumulator_settlement";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct EventStreamHead {
+                pub mmr: Vec<move_types::U256>,
+                pub checkpoint_seq: u64,
+                pub num_events: u64,
+            }
+        }
+        pub mod address_alias {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "address_alias";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AddressAliasState {
+                pub id: Address,
+                pub version: u64,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AddressAliases {
+                pub id: Address,
+                pub aliases: crate::wal::sui::vec_set::VecSet<Address>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AliasKey {
+                pub pos0: Address,
+            }
+        }
+        pub mod authenticator_state {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "authenticator_state";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AuthenticatorState {
+                pub id: Address,
+                pub version: u64,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AuthenticatorStateInner {
+                pub version: u64,
+                pub active_jwks: Vec<crate::wal::sui::authenticator_state::ActiveJwk>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct JWK {
+                pub kty: String,
+                pub e: String,
+                pub n: String,
+                pub alg: String,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct JwkId {
+                pub iss: String,
+                pub kid: String,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ActiveJwk {
+                pub jwk_id: crate::wal::sui::authenticator_state::JwkId,
+                pub jwk: crate::wal::sui::authenticator_state::JWK,
+                pub epoch: u64,
+            }
+        }
+        pub mod bag {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "bag";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Bag {
+                pub id: Address,
+                pub size: u64,
+            }
+        }
+        pub mod balance {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "balance";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Supply<T0> {
+                pub value: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Balance<T0> {
+                pub value: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod bcs {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "bcs";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct BCS {
+                pub bytes: Vec<u8>,
+            }
+        }
+        pub mod bls12381 {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "bls12381";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Scalar {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct G1 {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct G2 {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct GT {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct UncompressedG1 {
+                pub dummy_field: bool,
+            }
+        }
+        pub mod borrow {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "borrow";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Referent<T0> {
+                pub id: Address,
+                pub value: Option<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Borrow {
+                pub ref_: Address,
+                pub obj: Address,
+            }
+        }
+        pub mod clock {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "clock";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Clock {
+                pub id: Address,
+                pub timestamp_ms: u64,
+            }
+        }
+        pub mod coin {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "coin";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Coin<T0> {
+                pub id: Address,
+                pub balance: crate::wal::sui::balance::Balance<T0>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct CoinMetadata<T0> {
+                pub id: Address,
+                pub decimals: u8,
+                pub name: String,
+                pub symbol: String,
+                pub description: String,
+                pub icon_url: Option<crate::wal::sui::url::Url>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct RegulatedCoinMetadata<T0> {
+                pub id: Address,
+                pub coin_metadata_object: Address,
+                pub deny_cap_object: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TreasuryCap<T0> {
+                pub id: Address,
+                pub total_supply: crate::wal::sui::balance::Supply<T0>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DenyCapV2<T0> {
+                pub id: Address,
+                pub allow_global_pause: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct CurrencyCreated<T0> {
+                pub decimals: u8,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DenyCap<T0> {
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod coin_registry {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "coin_registry";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct CoinRegistry {
+                pub id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ExtraField {
+                pub pos0: String,
+                pub pos1: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct CurrencyKey<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct LegacyMetadataKey {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct MetadataCap<T0> {
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Borrow<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Currency<T0> {
+                pub id: Address,
+                pub decimals: u8,
+                pub name: String,
+                pub symbol: String,
+                pub description: String,
+                pub icon_url: String,
+                pub supply: Option<crate::wal::sui::coin_registry::SupplyState<T0>>,
+                pub regulated: crate::wal::sui::coin_registry::RegulatedState,
+                pub treasury_cap_id: Option<Address>,
+                pub metadata_cap_id: crate::wal::sui::coin_registry::MetadataCapState,
+                pub extra_fields: crate::wal::sui::vec_map::VecMap<
+                    String,
+                    crate::wal::sui::coin_registry::ExtraField,
+                >,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct CurrencyInitializer<T0> {
+                pub currency: crate::wal::sui::coin_registry::Currency<T0>,
+                pub extra_fields: crate::wal::sui::bag::Bag,
+                pub is_otw: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum SupplyState<T0> {
+                Fixed(crate::wal::sui::balance::Supply<T0>),
+                BurnOnly(crate::wal::sui::balance::Supply<T0>),
+                Unknown,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum RegulatedState {
+                Regulated {
+                    cap: Address,
+                    allow_global_pause: Option<bool>,
+                    variant: u8,
+                },
+                Unregulated,
+                Unknown,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum MetadataCapState {
+                Claimed(Address),
+                Unclaimed,
+                Deleted,
+            }
+        }
+        pub mod config {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "config";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Config<T0> {
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Setting<T0> {
+                pub data: Option<crate::wal::sui::config::SettingData<T0>>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct SettingData<T0> {
+                pub newer_value_epoch: u64,
+                pub newer_value: Option<T0>,
+                pub older_value_opt: Option<T0>,
+            }
+        }
+        pub mod deny_list {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "deny_list";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DenyList {
+                pub id: Address,
+                pub lists: crate::wal::sui::bag::Bag,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ConfigWriteCap {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ConfigKey {
+                pub per_type_index: u64,
+                pub per_type_key: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AddressKey {
+                pub pos0: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct GlobalPauseKey {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct PerTypeConfigCreated {
+                pub key: crate::wal::sui::deny_list::ConfigKey,
+                pub config_id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct PerTypeList {
+                pub id: Address,
+                pub denied_count: crate::wal::sui::table::Table<Address, u64>,
+                pub denied_addresses: crate::wal::sui::table::Table<
+                    Vec<u8>,
+                    crate::wal::sui::vec_set::VecSet<Address>,
+                >,
+            }
+        }
+        pub mod derived_object {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "derived_object";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Claimed {
+                pub pos0: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DerivedObjectKey<T0> {
+                pub pos0: T0,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum ClaimedStatus {
+                Reserved,
+            }
+        }
+        pub mod display {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "display";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Display<T0> {
+                pub id: Address,
+                pub fields: crate::wal::sui::vec_map::VecMap<String, String>,
+                pub version: u16,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DisplayCreated<T0> {
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct VersionUpdated<T0> {
+                pub id: Address,
+                pub version: u16,
+                pub fields: crate::wal::sui::vec_map::VecMap<String, String>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod display_registry {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "display_registry";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DisplayRegistry {
+                pub id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct SystemMigrationCap {
+                pub id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Display<T0> {
+                pub id: Address,
+                pub fields: crate::wal::sui::vec_map::VecMap<String, String>,
+                pub cap_id: Option<Address>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DisplayCap<T0> {
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct DisplayKey<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod dynamic_field {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "dynamic_field";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Field<T0, T1> {
+                pub id: Address,
+                pub name: T0,
+                pub value: T1,
+            }
+        }
+        pub mod dynamic_object_field {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "dynamic_object_field";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Wrapper<T0> {
+                pub name: T0,
+            }
+        }
+        pub mod funds_accumulator {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "funds_accumulator";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Withdrawal<T0> {
+                pub owner: Address,
+                pub limit: move_types::U256,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod groth16 {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "groth16";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Curve {
+                pub id: u8,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct PreparedVerifyingKey {
+                pub vk_gamma_abc_g1_bytes: Vec<u8>,
+                pub alpha_g1_beta_g2_bytes: Vec<u8>,
+                pub gamma_g2_neg_pc_bytes: Vec<u8>,
+                pub delta_g2_neg_pc_bytes: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct PublicProofInputs {
+                pub bytes: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ProofPoints {
+                pub bytes: Vec<u8>,
+            }
+        }
+        pub mod group_ops {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "group_ops";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Element<T0> {
+                pub bytes: Vec<u8>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod kiosk {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "kiosk";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Kiosk {
+                pub id: Address,
+                pub profits: crate::wal::sui::balance::Balance<
+                    crate::wal::sui::sui::SUI,
+                >,
+                pub owner: Address,
+                pub item_count: u32,
+                pub allow_extensions: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct KioskOwnerCap {
+                pub id: Address,
+                pub for_: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct PurchaseCap<T0> {
+                pub id: Address,
+                pub kiosk_id: Address,
+                pub item_id: Address,
+                pub min_price: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Borrow {
+                pub kiosk_id: Address,
+                pub item_id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Item {
+                pub id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Listing {
+                pub id: Address,
+                pub is_exclusive: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Lock {
+                pub id: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ItemListed<T0> {
+                pub kiosk: Address,
+                pub id: Address,
+                pub price: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ItemPurchased<T0> {
+                pub kiosk: Address,
+                pub id: Address,
+                pub price: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ItemDelisted<T0> {
+                pub kiosk: Address,
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod kiosk_extension {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "kiosk_extension";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Extension {
+                pub storage: crate::wal::sui::bag::Bag,
+                pub permissions: u128,
+                pub is_enabled: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ExtensionKey<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod linked_table {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "linked_table";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct LinkedTable<T0, T1> {
+                pub id: Address,
+                pub size: u64,
+                pub head: Option<T0>,
+                pub tail: Option<T0>,
+                phantom_data_1: std::marker::PhantomData<T1>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Node<T0, T1> {
+                pub prev: Option<T0>,
+                pub next: Option<T0>,
+                pub value: T1,
+            }
+        }
+        pub mod nitro_attestation {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "nitro_attestation";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct PCREntry {
+                pub index: u8,
+                pub value: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct NitroAttestationDocument {
+                pub module_id: Vec<u8>,
+                pub timestamp: u64,
+                pub digest: Vec<u8>,
+                pub pcrs: Vec<crate::wal::sui::nitro_attestation::PCREntry>,
+                pub public_key: Option<Vec<u8>>,
+                pub user_data: Option<Vec<u8>>,
+                pub nonce: Option<Vec<u8>>,
+            }
+        }
+        pub mod object {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "object";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ID {
+                pub bytes: Address,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct UID {
+                pub id: Address,
+            }
+        }
+        pub mod object_bag {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "object_bag";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ObjectBag {
+                pub id: Address,
+                pub size: u64,
+            }
+        }
+        pub mod object_table {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "object_table";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ObjectTable<T0, T1> {
+                pub id: Address,
+                pub size: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+                phantom_data_1: std::marker::PhantomData<T1>,
+            }
+        }
+        pub mod package {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "package";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Publisher {
+                pub id: Address,
+                pub package: String,
+                pub module_name: String,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct UpgradeCap {
+                pub id: Address,
+                pub package: Address,
+                pub version: u64,
+                pub policy: u8,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct UpgradeTicket {
+                pub cap: Address,
+                pub package: Address,
+                pub policy: u8,
+                pub digest: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct UpgradeReceipt {
+                pub cap: Address,
+                pub package: Address,
+            }
+        }
+        pub mod party {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "party";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Party {
+                pub default: crate::wal::sui::party::Permissions,
+                pub members: crate::wal::sui::vec_map::VecMap<
+                    Address,
+                    crate::wal::sui::party::Permissions,
+                >,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Permissions {
+                pub pos0: u64,
+            }
+        }
+        pub mod priority_queue {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "priority_queue";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct PriorityQueue<T0> {
+                pub entries: Vec<crate::wal::sui::priority_queue::Entry<T0>>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Entry<T0> {
+                pub priority: u64,
+                pub value: T0,
+            }
+        }
+        pub mod random {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "random";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Random {
+                pub id: Address,
+                pub inner: crate::wal::sui::versioned::Versioned,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct RandomInner {
+                pub version: u64,
+                pub epoch: u64,
+                pub randomness_round: u64,
+                pub random_bytes: Vec<u8>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct RandomGenerator {
+                pub seed: Vec<u8>,
+                pub counter: u16,
+                pub buffer: Vec<u8>,
+            }
+        }
+        pub mod ristretto255 {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "ristretto255";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Scalar {
+                pub dummy_field: bool,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct G {
+                pub dummy_field: bool,
+            }
+        }
+        pub mod sui {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "sui";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct SUI {
+                pub dummy_field: bool,
+            }
+        }
+        pub mod table {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "table";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Table<T0, T1> {
+                pub id: Address,
+                pub size: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+                phantom_data_1: std::marker::PhantomData<T1>,
+            }
+        }
+        pub mod table_vec {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "table_vec";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TableVec<T0> {
+                pub contents: crate::wal::sui::table::Table<u64, T0>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod token {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "token";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Token<T0> {
+                pub id: Address,
+                pub balance: crate::wal::sui::balance::Balance<T0>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TokenPolicyCap<T0> {
+                pub id: Address,
+                pub for_: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TokenPolicy<T0> {
+                pub id: Address,
+                pub spent_balance: crate::wal::sui::balance::Balance<T0>,
+                pub rules: crate::wal::sui::vec_map::VecMap<
+                    String,
+                    crate::wal::sui::vec_set::VecSet<String>,
+                >,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ActionRequest<T0> {
+                pub name: String,
+                pub amount: u64,
+                pub sender: Address,
+                pub recipient: Option<Address>,
+                pub spent_balance: Option<crate::wal::sui::balance::Balance<T0>>,
+                pub approvals: crate::wal::sui::vec_set::VecSet<String>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct RuleKey<T0> {
+                pub is_protected: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TokenPolicyCreated<T0> {
+                pub id: Address,
+                pub is_mutable: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod transfer {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "transfer";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Receiving<T0> {
+                pub id: Address,
+                pub version: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod transfer_policy {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "transfer_policy";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TransferRequest<T0> {
+                pub item: Address,
+                pub paid: u64,
+                pub from: Address,
+                pub receipts: crate::wal::sui::vec_set::VecSet<String>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TransferPolicy<T0> {
+                pub id: Address,
+                pub balance: crate::wal::sui::balance::Balance<
+                    crate::wal::sui::sui::SUI,
+                >,
+                pub rules: crate::wal::sui::vec_set::VecSet<String>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TransferPolicyCap<T0> {
+                pub id: Address,
+                pub policy_id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TransferPolicyCreated<T0> {
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TransferPolicyDestroyed<T0> {
+                pub id: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct RuleKey<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
+        pub mod tx_context {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "tx_context";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct TxContext {
+                pub sender: Address,
+                pub tx_hash: Vec<u8>,
+                pub epoch: u64,
+                pub epoch_timestamp_ms: u64,
+                pub ids_created: u64,
+            }
+        }
+        pub mod url {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "url";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Url {
+                pub url: String,
+            }
+        }
+        pub mod vec_map {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "vec_map";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct VecMap<T0, T1> {
+                pub contents: Vec<crate::wal::sui::vec_map::Entry<T0, T1>>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Entry<T0, T1> {
+                pub key: T0,
+                pub value: T1,
+            }
+        }
+        pub mod vec_set {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "vec_set";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct VecSet<T0> {
+                pub contents: Vec<T0>,
+            }
+        }
+        pub mod versioned {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "versioned";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Versioned {
+                pub id: Address,
+                pub version: u64,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct VersionChangeCap {
+                pub versioned_id: Address,
+                pub old_version: u64,
+            }
+        }
+        pub mod zklogin_verified_id {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "zklogin_verified_id";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct VerifiedID {
+                pub id: Address,
+                pub owner: Address,
+                pub key_claim_name: String,
+                pub key_claim_value: String,
+                pub issuer: String,
+                pub audience: String,
+            }
+        }
+        pub mod zklogin_verified_issuer {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "zklogin_verified_issuer";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct VerifiedIssuer {
+                pub id: Address,
+                pub owner: Address,
+                pub issuer: String,
+            }
         }
     }
 }

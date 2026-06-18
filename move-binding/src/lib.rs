@@ -18,8 +18,8 @@ impl SuiNetwork {
     }
     pub fn gql(&self) -> &str {
         match self {
-            SuiNetwork::Mainnet => "https://sui-mainnet.mystenlabs.com/graphql",
-            SuiNetwork::Testnet => "https://sui-testnet.mystenlabs.com/graphql",
+            SuiNetwork::Mainnet => "https://graphql.mainnet.sui.io/graphql",
+            SuiNetwork::Testnet => "https://graphql.testnet.sui.io/graphql",
         }
     }
 }

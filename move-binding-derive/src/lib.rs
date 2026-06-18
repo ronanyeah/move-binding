@@ -1,10 +1,10 @@
-use move_binding::move_codegen::MoveCodegen;
 use move_binding::SuiNetwork;
+use move_binding::move_codegen::MoveCodegen;
 use proc_macro::TokenStream;
 use proc_macro2::Ident;
 use quote::quote;
 use syn::parse::{Parse, ParseStream};
-use syn::{parse_macro_input, DeriveInput, ExprPath, GenericParam, Generics, LitStr, Token};
+use syn::{DeriveInput, ExprPath, GenericParam, Generics, LitStr, Token, parse_macro_input};
 
 #[proc_macro_derive(Key)]
 pub fn key_derive(input: TokenStream) -> TokenStream {
@@ -22,14 +22,14 @@ pub fn key_derive(input: TokenStream) -> TokenStream {
         )
     };
 
-    let gen = quote! {
+    let q = quote! {
         impl #types_with_trait move_types::Key for #name #types {
-            fn id(&self) -> &move_types::ObjectId {
+            fn id(&self) -> &move_types::Address {
                 &self.id
             }
         }
     };
-    gen.into()
+    q.into()
 }
 
 fn extract_type_ident(generics: &Generics) -> Vec<Ident> {
@@ -46,7 +46,7 @@ fn extract_type_ident(generics: &Generics) -> Vec<Ident> {
         .collect()
 }
 
-#[proc_macro_derive(MoveStruct)]
+#[proc_macro_derive(MoveStruct, attributes(move_struct))]
 pub fn move_struct_derive(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
     let name = &ast.ident;
@@ -54,16 +54,50 @@ pub fn move_struct_derive(input: TokenStream) -> TokenStream {
     let types = extract_type_ident(&ast.generics);
     let name_str = name.to_string();
 
-    let gen = if types.is_empty() {
+    // Look for `#[move_struct(origin = "0x...")]` to generate TYPE_ORIGIN_ID.
+    let origin_hex = ast.attrs.iter().find_map(|attr| {
+        if !attr.path().is_ident("move_struct") {
+            return None;
+        }
+        let mut found: Option<String> = None;
+        let _ = attr.parse_nested_meta(|meta| {
+            if meta.path.is_ident("origin") {
+                let lit: LitStr = meta.value()?.parse()?;
+                found = Some(lit.value());
+            }
+            Ok(())
+        });
+        found
+    });
+
+    let origin_impl = origin_hex.map(|hex| {
+        if types.is_empty() {
+            quote! {
+                impl #name {
+                    pub const TYPE_ORIGIN_ID: move_types::Address =
+                        move_types::Address::from_static(#hex);
+                }
+            }
+        } else {
+            quote! {
+                impl<#(#types),*> #name<#(#types),*> {
+                    pub const TYPE_ORIGIN_ID: move_types::Address =
+                        move_types::Address::from_static(#hex);
+                }
+            }
+        }
+    });
+
+    let trait_impl = if types.is_empty() {
         quote! {
             impl move_types::MoveStruct for #name {
                 fn struct_type() -> move_types::StructTag {
-                    move_types::StructTag {
-                        address: Self::TYPE_ORIGIN_ID,
-                        module: move_types::Identifier::from_str(MODULE_NAME).unwrap(),
-                        name: move_types::Identifier::from_str(#name_str).unwrap(),
-                        type_params: vec![],
-                    }
+                    move_types::StructTag::new(
+                        Self::TYPE_ORIGIN_ID,
+                        move_types::Identifier::from_static(MODULE_NAME),
+                        move_types::Identifier::from_static(#name_str),
+                        vec![],
+                    )
                 }
             }
         }
@@ -71,17 +105,22 @@ pub fn move_struct_derive(input: TokenStream) -> TokenStream {
         quote! {
             impl <#(#types:move_types::MoveType), *> move_types::MoveStruct for #name<#(#types),*> {
                 fn struct_type() -> move_types::StructTag {
-                    move_types::StructTag {
-                        address: Self::TYPE_ORIGIN_ID,
-                        module: move_types::Identifier::from_str(MODULE_NAME).unwrap(),
-                        name: move_types::Identifier::from_str(#name_str).unwrap(),
-                        type_params: vec![#(#types::type_()),*],
-                    }
+                    move_types::StructTag::new(
+                        Self::TYPE_ORIGIN_ID,
+                        move_types::Identifier::from_static(MODULE_NAME),
+                        move_types::Identifier::from_static(#name_str),
+                        vec![#(#types::type_()),*],
+                    )
                 }
             }
         }
     };
-    gen.into()
+
+    let q = quote! {
+        #origin_impl
+        #trait_impl
+    };
+    q.into()
 }
 
 struct MoveContractArgs {
@@ -118,7 +157,7 @@ impl Parse for MoveContractArgs {
                             return Err(syn::Error::new(
                                 key.span(),
                                 "Unknown network, only ['mainnet', 'testnet'] are supported.",
-                            ))
+                            ));
                         }
                     };
                 }

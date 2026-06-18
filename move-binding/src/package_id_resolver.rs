@@ -22,8 +22,10 @@ impl PackageIdResolver {
         let name = client
             .get(format!("{url}/v1/resolution/{package}"))
             .send()?;
-        Ok(serde_json::from_value(
-            name.json::<Value>()?["package_id"].clone(),
-        )?)
+        let id = name.json::<Value>()?["package_id"]
+            .as_str()
+            .ok_or_else(|| anyhow::anyhow!("missing or non-string `package_id` in MVR response"))?
+            .to_string();
+        Ok(Address::from_str(&id)?)
     }
 }

@@ -4,10 +4,10 @@ version = "0.1.0"
 authors = ["Mysten Labs <build@mystenlabs.com>"]
 license = "Apache-2.0"
 publish = false
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-serde.workspace = true
-sui-sdk-types = { git = "https://github.com/mystenlabs/sui-rust-sdk", features = ["serde"], rev="f0c8068" }
-sui-transaction-builder = { git = "https://github.com/mystenlabs/sui-rust-sdk", rev="f0c8068" }
-move-core-types = { git = "https://github.com/MystenLabs/sui.git", rev = "42ba6c0" }
+move-core-types = { workspace = true }
+serde = { workspace = true }
+sui-sdk-types = { workspace = true }
+sui-transaction-builder = { workspace = true }

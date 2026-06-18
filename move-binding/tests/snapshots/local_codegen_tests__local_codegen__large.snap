@@ -1,0 +1,309 @@
+---
+source: move-binding/tests/local_codegen_tests.rs
+expression: rendered
+---
+#[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
+pub mod large {
+    pub const PACKAGE_VERSION: u64 = 2u64;
+    pub mod drop {
+        use move_binding_derive::{MoveStruct, Key};
+        use move_types::{MoveType, Address, Identifier};
+        use move_types::functions::{Arg, Ref, MutRef};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x4e76606185130cd30293f43f638d353d8b7bb5848d1f6ca5b47f45b5c71c0465",
+        );
+        pub const MODULE_NAME: &str = "drop";
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+        #[move_struct(
+            origin = "0x4e76606185130cd30293f43f638d353d8b7bb5848d1f6ca5b47f45b5c71c0465"
+        )]
+        pub struct Drop<T0> {
+            pub id: Address,
+            pub root: Vec<u8>,
+            pub wallet_count: u32,
+            pub airdrop_total: u64,
+            pub vault: crate::sui::balance::Balance<T0>,
+            pub allocations: Address,
+            pub merkle_tree: Address,
+            pub registry: crate::sui::table::Table<Address, bool>,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+        #[move_struct(
+            origin = "0x4e76606185130cd30293f43f638d353d8b7bb5848d1f6ca5b47f45b5c71c0465"
+        )]
+        pub struct DeleteCap {
+            pub id: Address,
+            pub object_id: Address,
+        }
+        pub fn create_drop<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            root: Arg<Vec<u8>>,
+            funds: Arg<crate::sui::coin::Coin<T0>>,
+            leaves_storage: Arg<Address>,
+            merkle_storage: Arg<Address>,
+            wallet_count: Arg<u32>,
+        ) -> Arg<crate::large::drop::DeleteCap> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("create_drop"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![
+                        root.into(), funds.into(), leaves_storage.into(), merkle_storage
+                        .into(), wallet_count.into()
+                    ],
+                )
+                .into()
+        }
+        pub fn destroy_drop<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            cap: Arg<crate::large::drop::DeleteCap>,
+            drop: Arg<crate::large::drop::Drop<T0>>,
+        ) -> Arg<crate::sui::coin::Coin<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("destroy_drop"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![cap.into(), drop.into()],
+                )
+                .into()
+        }
+        pub fn claim<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            proof: Arg<Vec<Vec<u8>>>,
+            leaf_index: Arg<u64>,
+            allocation: Arg<u64>,
+            drop: MutRef<'a, crate::large::drop::Drop<T0>>,
+        ) -> Arg<crate::sui::coin::Coin<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("claim"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![proof.into(), leaf_index.into(), allocation.into(), drop.into()],
+                )
+                .into()
+        }
+        pub fn has_claimed<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            addr: Arg<Address>,
+            drop: Ref<'a, crate::large::drop::Drop<T0>>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("has_claimed"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![addr.into(), drop.into()],
+                )
+                .into()
+        }
+        pub fn claims_count<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            drop: Ref<'a, crate::large::drop::Drop<T0>>,
+        ) -> Arg<u64> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("claims_count"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![drop.into()],
+                )
+                .into()
+        }
+        pub fn verify_sender_proof<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            root: Arg<Vec<u8>>,
+            proof: Ref<'a, Vec<Vec<u8>>>,
+            sender: Ref<'a, Address>,
+            allocation: Arg<u64>,
+            leaf_index: Arg<u64>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("verify_sender_proof"),
+                    ),
+                    vec![
+                        root.into(), proof.into(), sender.into(), allocation.into(),
+                        leaf_index.into()
+                    ],
+                )
+                .into()
+        }
+        pub fn verify_proof<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            proof: Ref<'a, Vec<Vec<u8>>>,
+            root: Arg<Vec<u8>>,
+            leaf: Arg<Vec<u8>>,
+            leaf_index: Arg<u64>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("verify_proof"),
+                    ),
+                    vec![proof.into(), root.into(), leaf.into(), leaf_index.into()],
+                )
+                .into()
+        }
+        pub fn compute_proof<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            leaf: Arg<Vec<u8>>,
+            proof: Ref<'a, Vec<Vec<u8>>>,
+            current_index: Arg<u64>,
+        ) -> Arg<Vec<u8>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("compute_proof"),
+                    ),
+                    vec![leaf.into(), proof.into(), current_index.into()],
+                )
+                .into()
+        }
+        pub fn hash_slices(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            a: Arg<Vec<u8>>,
+            b: Arg<Vec<u8>>,
+        ) -> Arg<Vec<u8>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("hash_slices"),
+                    ),
+                    vec![a.into(), b.into()],
+                )
+                .into()
+        }
+        pub fn hash_address_w_allocation<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            addr: Ref<'a, Address>,
+            allocation: Arg<u64>,
+        ) -> Arg<Vec<u8>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("hash_address_w_allocation"),
+                    ),
+                    vec![addr.into(), allocation.into()],
+                )
+                .into()
+        }
+        pub fn proof_length(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            leaves: Arg<u64>,
+        ) -> Arg<u64> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("proof_length"),
+                    ),
+                    vec![leaves.into()],
+                )
+                .into()
+        }
+    }
+}
+#[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
+pub mod sui {
+    pub mod balance {
+        use move_types::{MoveType, Address, Identifier, StructTag};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x0000000000000000000000000000000000000000000000000000000000000002",
+        );
+        pub const MODULE_NAME: &str = "balance";
+        #[derive(
+            serde::Deserialize,
+            serde::Serialize,
+            Debug,
+            move_binding_derive::MoveStruct
+        )]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        #[serde(bound(serialize = "", deserialize = ""))]
+        pub struct Balance<T0> {
+            pub value: u64,
+            #[serde(skip)]
+            _phantom_0: std::marker::PhantomData<T0>,
+        }
+    }
+    pub mod coin {
+        use move_types::{MoveType, Address, Identifier, StructTag};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x0000000000000000000000000000000000000000000000000000000000000002",
+        );
+        pub const MODULE_NAME: &str = "coin";
+        #[derive(
+            serde::Deserialize,
+            serde::Serialize,
+            Debug,
+            move_binding_derive::MoveStruct
+        )]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        #[serde(bound(serialize = "", deserialize = ""))]
+        pub struct Coin<T0> {
+            pub id: Address,
+            pub balance: crate::sui::balance::Balance<T0>,
+            #[serde(skip)]
+            _phantom_0: std::marker::PhantomData<T0>,
+        }
+    }
+    pub mod table {
+        use move_types::{MoveType, Address, Identifier, StructTag};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x0000000000000000000000000000000000000000000000000000000000000002",
+        );
+        pub const MODULE_NAME: &str = "table";
+        #[derive(
+            serde::Deserialize,
+            serde::Serialize,
+            Debug,
+            move_binding_derive::MoveStruct
+        )]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        #[serde(bound(serialize = "", deserialize = ""))]
+        pub struct Table<T0, T1> {
+            pub id: Address,
+            pub size: u64,
+            #[serde(skip)]
+            _phantom_0: std::marker::PhantomData<T0>,
+            #[serde(skip)]
+            _phantom_1: std::marker::PhantomData<T1>,
+        }
+    }
+}
