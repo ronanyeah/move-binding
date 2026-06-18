@@ -1,0 +1,767 @@
+{
+  "id": {
+    "address": "large",
+    "name": "drop"
+  },
+  "doc": null,
+  "immediate_dependencies": [
+    {
+      "address": "std",
+      "name": "vector"
+    },
+    {
+      "address": "sui",
+      "name": "balance"
+    },
+    {
+      "address": "sui",
+      "name": "bcs"
+    },
+    {
+      "address": "sui",
+      "name": "coin"
+    },
+    {
+      "address": "sui",
+      "name": "hash"
+    },
+    {
+      "address": "sui",
+      "name": "object"
+    },
+    {
+      "address": "sui",
+      "name": "table"
+    },
+    {
+      "address": "sui",
+      "name": "transfer"
+    },
+    {
+      "address": "sui",
+      "name": "tx_context"
+    },
+    {
+      "address": "sui",
+      "name": "vec_set"
+    }
+  ],
+  "attributes": [],
+  "functions": {
+    "create_drop": {
+      "source_index": 0,
+      "index": 0,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "name": "TOKEN",
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "root",
+          "type_": {
+            "vector": "u8"
+          }
+        },
+        {
+          "name": "funds",
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "sui",
+                "name": "coin"
+              },
+              "name": "Coin",
+              "type_arguments": [
+                {
+                  "phantom": true,
+                  "argument": {
+                    "NamedTypeParameter": "TOKEN"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "leaves_storage",
+          "type_": "address"
+        },
+        {
+          "name": "merkle_storage",
+          "type_": "address"
+        },
+        {
+          "name": "wallet_count",
+          "type_": "u32"
+        },
+        {
+          "name": "ctx",
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "sui",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        {
+          "Datatype": {
+            "module": {
+              "address": "large",
+              "name": "drop"
+            },
+            "name": "DeleteCap",
+            "type_arguments": []
+          }
+        }
+      ]
+    },
+    "destroy_drop": {
+      "source_index": 1,
+      "index": 1,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "name": "TOKEN",
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "cap",
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "large",
+                "name": "drop"
+              },
+              "name": "DeleteCap",
+              "type_arguments": []
+            }
+          }
+        },
+        {
+          "name": "drop",
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "large",
+                "name": "drop"
+              },
+              "name": "Drop",
+              "type_arguments": [
+                {
+                  "phantom": true,
+                  "argument": {
+                    "NamedTypeParameter": "TOKEN"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ctx",
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "sui",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        {
+          "Datatype": {
+            "module": {
+              "address": "sui",
+              "name": "coin"
+            },
+            "name": "Coin",
+            "type_arguments": [
+              {
+                "phantom": true,
+                "argument": {
+                  "NamedTypeParameter": "TOKEN"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "claim": {
+      "source_index": 2,
+      "index": 2,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "name": "TOKEN",
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "proof",
+          "type_": {
+            "vector": {
+              "vector": "u8"
+            }
+          }
+        },
+        {
+          "name": "leaf_index",
+          "type_": "u64"
+        },
+        {
+          "name": "allocation",
+          "type_": "u64"
+        },
+        {
+          "name": "drop",
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "large",
+                    "name": "drop"
+                  },
+                  "name": "Drop",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "NamedTypeParameter": "TOKEN"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "ctx",
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "sui",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        {
+          "Datatype": {
+            "module": {
+              "address": "sui",
+              "name": "coin"
+            },
+            "name": "Coin",
+            "type_arguments": [
+              {
+                "phantom": true,
+                "argument": {
+                  "NamedTypeParameter": "TOKEN"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "has_claimed": {
+      "source_index": 3,
+      "index": 3,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "name": "TOKEN",
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "addr",
+          "type_": "address"
+        },
+        {
+          "name": "drop",
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "large",
+                    "name": "drop"
+                  },
+                  "name": "Drop",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "NamedTypeParameter": "TOKEN"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        "bool"
+      ]
+    },
+    "claims_count": {
+      "source_index": 4,
+      "index": 4,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "name": "TOKEN",
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "drop",
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "large",
+                    "name": "drop"
+                  },
+                  "name": "Drop",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "NamedTypeParameter": "TOKEN"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        "u64"
+      ]
+    },
+    "verify_sender_proof": {
+      "source_index": 5,
+      "index": 5,
+      "doc": " internal",
+      "attributes": [],
+      "visibility": "Package",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "name": "root",
+          "type_": {
+            "vector": "u8"
+          }
+        },
+        {
+          "name": "proof",
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": {
+                  "vector": "u8"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "sender",
+          "type_": {
+            "Reference": [
+              false,
+              "address"
+            ]
+          }
+        },
+        {
+          "name": "allocation",
+          "type_": "u64"
+        },
+        {
+          "name": "leaf_index",
+          "type_": "u64"
+        }
+      ],
+      "return_": [
+        "bool"
+      ]
+    },
+    "verify_proof": {
+      "source_index": 6,
+      "index": 6,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "name": "proof",
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": {
+                  "vector": "u8"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "root",
+          "type_": {
+            "vector": "u8"
+          }
+        },
+        {
+          "name": "leaf",
+          "type_": {
+            "vector": "u8"
+          }
+        },
+        {
+          "name": "leaf_index",
+          "type_": "u64"
+        }
+      ],
+      "return_": [
+        "bool"
+      ]
+    },
+    "compute_proof": {
+      "source_index": 7,
+      "index": 7,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "name": "leaf",
+          "type_": {
+            "vector": "u8"
+          }
+        },
+        {
+          "name": "proof",
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": {
+                  "vector": "u8"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "current_index",
+          "type_": "u64"
+        }
+      ],
+      "return_": [
+        {
+          "vector": "u8"
+        }
+      ]
+    },
+    "hash_slices": {
+      "source_index": 8,
+      "index": 8,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "name": "a",
+          "type_": {
+            "vector": "u8"
+          }
+        },
+        {
+          "name": "b",
+          "type_": {
+            "vector": "u8"
+          }
+        }
+      ],
+      "return_": [
+        {
+          "vector": "u8"
+        }
+      ]
+    },
+    "hash_address_w_allocation": {
+      "source_index": 9,
+      "index": 9,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "name": "addr",
+          "type_": {
+            "Reference": [
+              false,
+              "address"
+            ]
+          }
+        },
+        {
+          "name": "allocation",
+          "type_": "u64"
+        }
+      ],
+      "return_": [
+        {
+          "vector": "u8"
+        }
+      ]
+    },
+    "proof_length": {
+      "source_index": 10,
+      "index": 10,
+      "doc": null,
+      "attributes": [],
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "name": "leaves",
+          "type_": "u64"
+        }
+      ],
+      "return_": [
+        "u64"
+      ]
+    }
+  },
+  "structs": {
+    "Drop": {
+      "index": 0,
+      "doc": null,
+      "attributes": [],
+      "abilities": [
+        "Key",
+        "Store"
+      ],
+      "type_parameters": [
+        {
+          "phantom": true,
+          "name": "TOKEN",
+          "constraints": []
+        }
+      ],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "id": {
+            "index": 0,
+            "doc": null,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "sui",
+                  "name": "object"
+                },
+                "name": "UID",
+                "type_arguments": []
+              }
+            }
+          },
+          "root": {
+            "index": 1,
+            "doc": null,
+            "type_": {
+              "vector": "u8"
+            }
+          },
+          "wallet_count": {
+            "index": 2,
+            "doc": null,
+            "type_": "u32"
+          },
+          "airdrop_total": {
+            "index": 3,
+            "doc": null,
+            "type_": "u64"
+          },
+          "vault": {
+            "index": 4,
+            "doc": null,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "sui",
+                  "name": "balance"
+                },
+                "name": "Balance",
+                "type_arguments": [
+                  {
+                    "phantom": true,
+                    "argument": {
+                      "NamedTypeParameter": "TOKEN"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "allocations": {
+            "index": 5,
+            "doc": null,
+            "type_": "address"
+          },
+          "merkle_tree": {
+            "index": 6,
+            "doc": null,
+            "type_": "address"
+          },
+          "registry": {
+            "index": 7,
+            "doc": null,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "sui",
+                  "name": "table"
+                },
+                "name": "Table",
+                "type_arguments": [
+                  {
+                    "phantom": true,
+                    "argument": "address"
+                  },
+                  {
+                    "phantom": true,
+                    "argument": "bool"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "DeleteCap": {
+      "index": 1,
+      "doc": null,
+      "attributes": [],
+      "abilities": [
+        "Key",
+        "Store"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "id": {
+            "index": 0,
+            "doc": null,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "sui",
+                  "name": "object"
+                },
+                "name": "UID",
+                "type_arguments": []
+              }
+            }
+          },
+          "object_id": {
+            "index": 1,
+            "doc": null,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "sui",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "enums": {}
+}
