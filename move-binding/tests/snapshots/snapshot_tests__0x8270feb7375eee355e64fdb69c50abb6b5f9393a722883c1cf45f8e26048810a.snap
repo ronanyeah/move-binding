@@ -1461,6 +1461,22 @@ pub mod wal {
                 pub dummy_field: bool,
             }
         }
+        pub mod scratch {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "scratch";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Permit<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+        }
         pub mod sui {
             use move_binding_derive::{MoveStruct, Key};
             use move_types::{MoveType, Address, Identifier, StructTag};

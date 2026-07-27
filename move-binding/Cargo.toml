@@ -9,22 +9,22 @@ edition = "2024"
 [dependencies]
 anyhow = { workspace = true }
 bcs = "0.2.1"
-fastcrypto = "0.1.10"
+fastcrypto = "0.1.11"
 indexmap = "2.14.0"
 itertools = "0.15.0"
 move-binary-format = { workspace = true }
 move-core-types = { workspace = true }
 move-model-2 = { workspace = true }
 move-symbol-pool = { workspace = true }
-prettyplease = "0.2.37"
-proc-macro2 = "1.0.106"
-quote = "1.0.45"
+prettyplease = "0.3.0"
+proc-macro2 = "1.0.107"
+quote = "1.0.47"
 reqwest = { version = "0.13", features = ["blocking", "json"] }
 serde = { workspace = true }
-serde_json = "1.0.150"
+serde_json = "1.0.151"
 sui-sdk-types = { workspace = true }
 summary-parser = { path = "../summary-parser" }
-syn = "2.0.118"
+syn = "3.0.3"
 
 [dev-dependencies]
 insta = "1.48.0"

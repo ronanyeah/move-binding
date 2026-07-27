@@ -5,16 +5,16 @@ edition = "2024"
 
 [dependencies]
 anyhow = { workspace = true }
-clap = { version = "4.6.1", features = ["derive"] }
+clap = { version = "4.6.4", features = ["derive"] }
 move-binary-format = { workspace = true }
 move-binding = { path = "../move-binding" }
 move-core-types = { workspace = true }
 move-model-2 = { workspace = true }
 move-symbol-pool = { workspace = true }
-prettyplease = "0.2.37"
-serde_json = "1.0.150"
-sui-rpc = "0.3.1"
+prettyplease = "0.3.0"
+serde_json = "1.0.151"
+sui-rpc = { workspace = true }
 sui-sdk-types = { workspace = true }
 summary-parser = { path = "../summary-parser" }
-syn = { version = "2.0.118", features = ["full"] }
-tokio = { version = "1.52.3", features = ["full"] }
+syn = { version = "3.0.3", features = ["full"] }
+tokio = { version = "1.53.1", features = ["full"] }

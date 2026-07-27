@@ -9,11 +9,12 @@ members = [
 resolver = "3"
 
 [workspace.dependencies]
-anyhow = "1.0.102"
+anyhow = "1.0.104"
 move-binary-format = { git = "https://github.com/MystenLabs/sui", branch = "framework/mainnet" }
 move-core-types = { git = "https://github.com/MystenLabs/sui", branch = "framework/mainnet" }
 move-model-2 = { git = "https://github.com/MystenLabs/sui", branch = "framework/mainnet" }
 move-symbol-pool = { git = "https://github.com/MystenLabs/sui", branch = "framework/mainnet" }
-serde = "1.0.228"
-sui-sdk-types = "0.3.1"
-sui-transaction-builder = "0.3.1"
+serde = "1.0.229"
+sui-rpc = "0.3.2"
+sui-sdk-types = "0.3.2"
+sui-transaction-builder = "0.3.2"

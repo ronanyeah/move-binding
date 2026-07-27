@@ -4,7 +4,7 @@ expression: pretty
 ---
 #[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 pub mod sui_system {
-    pub const PACKAGE_VERSION: u64 = 32u64;
+    pub const PACKAGE_VERSION: u64 = 33u64;
     pub mod genesis {
         use move_binding_derive::{MoveStruct, Key};
         use move_types::{MoveType, Address, Identifier};
@@ -5126,20 +5126,6 @@ pub mod sui_system {
                 )
                 .into()
         }
-        pub fn effectuate_staged_metadata<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: MutRef<'a, crate::sui_system::validator_set::ValidatorSet>,
-        ) {
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("effectuate_staged_metadata"),
-                    ),
-                    vec![p0.into()],
-                );
-        }
         pub fn derive_reference_gas_price<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, crate::sui_system::validator_set::ValidatorSet>,
@@ -5350,38 +5336,6 @@ pub mod sui_system {
                 )
                 .into()
         }
-        pub fn is_duplicate_validator<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: Ref<'a, Vec<crate::sui_system::validator::Validator>>,
-            p1: Ref<'a, crate::sui_system::validator::Validator>,
-        ) -> Arg<bool> {
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("is_duplicate_validator"),
-                    ),
-                    vec![p0.into(), p1.into()],
-                )
-                .into()
-        }
-        pub fn count_duplicates_vec<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: Ref<'a, Vec<crate::sui_system::validator::Validator>>,
-            p1: Ref<'a, crate::sui_system::validator::Validator>,
-        ) -> Arg<u64> {
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("count_duplicates_vec"),
-                    ),
-                    vec![p0.into(), p1.into()],
-                )
-                .into()
-        }
         pub fn is_duplicate_with_pending_validator<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, crate::sui_system::validator_set::ValidatorSet>,
@@ -5393,27 +5347,6 @@ pub mod sui_system {
                         PACKAGE_ID,
                         Identifier::from_static(MODULE_NAME),
                         Identifier::from_static("is_duplicate_with_pending_validator"),
-                    ),
-                    vec![p0.into(), p1.into()],
-                )
-                .into()
-        }
-        pub fn count_duplicates_tablevec<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: Ref<
-                'a,
-                crate::sui_system::sui::table_vec::TableVec<
-                    crate::sui_system::validator::Validator,
-                >,
-            >,
-            p1: Ref<'a, crate::sui_system::validator::Validator>,
-        ) -> Arg<u64> {
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("count_duplicates_tablevec"),
                     ),
                     vec![p0.into(), p1.into()],
                 )
@@ -5737,34 +5670,6 @@ pub mod sui_system {
                     vec![p0.into(), p1.into()],
                 );
         }
-        pub fn sort_removal_list<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: MutRef<'a, Vec<u64>>,
-        ) {
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("sort_removal_list"),
-                    ),
-                    vec![p0.into()],
-                );
-        }
-        pub fn process_pending_stakes_and_withdraws<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: MutRef<'a, Vec<crate::sui_system::validator::Validator>>,
-        ) {
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("process_pending_stakes_and_withdraws"),
-                    ),
-                    vec![p0.into()],
-                );
-        }
         pub fn calculate_total_stakes<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, Vec<crate::sui_system::validator::Validator>>,
@@ -5779,20 +5684,6 @@ pub mod sui_system {
                     vec![p0.into()],
                 )
                 .into()
-        }
-        pub fn adjust_stake_and_gas_price<'a>(
-            builder: &mut sui_transaction_builder::TransactionBuilder,
-            p0: MutRef<'a, Vec<crate::sui_system::validator::Validator>>,
-        ) {
-            builder
-                .move_call(
-                    sui_transaction_builder::Function::new(
-                        PACKAGE_ID,
-                        Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("adjust_stake_and_gas_price"),
-                    ),
-                    vec![p0.into()],
-                );
         }
         pub fn compute_reward_adjustments<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,

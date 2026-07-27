@@ -4,7 +4,7 @@ expression: pretty
 ---
 #[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 pub mod sui {
-    pub const PACKAGE_VERSION: u64 = 54u64;
+    pub const PACKAGE_VERSION: u64 = 56u64;
     pub mod accumulator {
         use move_binding_derive::{MoveStruct, Key};
         use move_types::{MoveType, Address, Identifier};
@@ -9008,6 +9008,42 @@ pub mod sui {
                     vec![p0.into(), p1.into(), p2.into()],
                 );
         }
+        pub fn insert_before<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::sui::linked_table::LinkedTable<T0, T1>>,
+            p1: Arg<T0>,
+            p2: Arg<T0>,
+            p3: Arg<T1>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("insert_before"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p0.into(), p1.into(), p2.into(), p3.into()],
+                );
+        }
+        pub fn insert_after<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::sui::linked_table::LinkedTable<T0, T1>>,
+            p1: Arg<T0>,
+            p2: Arg<T0>,
+            p3: Arg<T1>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("insert_after"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p0.into(), p1.into(), p2.into(), p3.into()],
+                );
+        }
         pub fn borrow<'a, T0: MoveType, T1: MoveType>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, crate::sui::linked_table::LinkedTable<T0, T1>>,
@@ -11602,6 +11638,30 @@ pub mod sui {
             "0x0000000000000000000000000000000000000000000000000000000000000002",
         );
         pub const MODULE_NAME: &str = "rangeproofs";
+        pub fn verify_bulletproofs_with_dst_ristretto255<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, Vec<u8>>,
+            p1: Arg<u8>,
+            p2: Ref<
+                'a,
+                Vec<crate::sui::group_ops::Element<crate::sui::ristretto255::G>>,
+            >,
+            p3: Ref<'a, Vec<u8>>,
+            p4: Arg<u8>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static(
+                            "verify_bulletproofs_with_dst_ristretto255",
+                        ),
+                    ),
+                    vec![p0.into(), p1.into(), p2.into(), p3.into(), p4.into()],
+                )
+                .into()
+        }
         pub fn verify_bulletproofs_ristretto255<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, Vec<u8>>,
@@ -11623,11 +11683,12 @@ pub mod sui {
                 )
                 .into()
         }
-        pub fn verify_bulletproofs_ristretto255_internal<'a>(
+        pub fn verify_bulletproofs_with_dst_ristretto255_internal<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, Vec<u8>>,
             p1: Arg<u8>,
             p2: Ref<'a, Vec<Vec<u8>>>,
+            p3: Ref<'a, Vec<u8>>,
         ) -> Arg<bool> {
             builder
                 .move_call(
@@ -11635,10 +11696,10 @@ pub mod sui {
                         PACKAGE_ID,
                         Identifier::from_static(MODULE_NAME),
                         Identifier::from_static(
-                            "verify_bulletproofs_ristretto255_internal",
+                            "verify_bulletproofs_with_dst_ristretto255_internal",
                         ),
                     ),
-                    vec![p0.into(), p1.into(), p2.into()],
+                    vec![p0.into(), p1.into(), p2.into(), p3.into()],
                 )
                 .into()
         }
