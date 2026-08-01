@@ -10,6 +10,11 @@ fn test_generate_sui_packages() {
     test_package(SuiNetwork::Mainnet, "0x3", "sui_system");
     test_package(SuiNetwork::Mainnet, "0xb", "bridge");
     test_package(
+        SuiNetwork::Mainnet,
+        "0x7daa0be72e7c857f40f8aefa74ac835dccfa4e25ec40a92665e54249d93d3892",
+        "large",
+    );
+    test_package(
         SuiNetwork::Testnet,
         "0x8270feb7375eee355e64fdb69c50abb6b5f9393a722883c1cf45f8e26048810a",
         "wal",

@@ -4,7 +4,7 @@ expression: pretty
 ---
 #[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 pub mod sui {
-    pub const PACKAGE_VERSION: u64 = 56u64;
+    pub const PACKAGE_VERSION: u64 = 57u64;
     pub mod accumulator {
         use move_binding_derive::{MoveStruct, Key};
         use move_types::{MoveType, Address, Identifier};
@@ -12014,6 +12014,271 @@ pub mod sui {
                         Identifier::from_static(MODULE_NAME),
                         Identifier::from_static("g_neg"),
                     ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+    }
+    pub mod scratch {
+        use move_binding_derive::{MoveStruct, Key};
+        use move_types::{MoveType, Address, Identifier};
+        use move_types::functions::{Arg, Ref, MutRef};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x0000000000000000000000000000000000000000000000000000000000000002",
+        );
+        pub const MODULE_NAME: &str = "scratch";
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct Permit<T0> {
+            pub dummy_field: bool,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        pub fn permit<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<crate::sui::move_std::internal::Permit<T0>>,
+        ) -> Arg<crate::sui::scratch::Permit<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("permit"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn add<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+            p3: Arg<T1>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("add"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into(), p3.into()],
+                );
+        }
+        pub fn read<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+        ) -> Arg<T1> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("read"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn remove<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+        ) -> Arg<T1> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("remove"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn exists<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("exists"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn exists_with_type<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("exists_with_type"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn read_opt<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+        ) -> Arg<Option<T1>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("read_opt"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn remove_opt<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+        ) -> Arg<Option<T1>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("remove_opt"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn replace<'a, T0: MoveType, T1: MoveType, T2: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+            p3: Arg<T1>,
+        ) -> Arg<Option<T2>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("replace"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_(), T2::type_()]),
+                    vec![p1.into(), p2.into(), p3.into()],
+                )
+                .into()
+        }
+        pub fn hash_type_and_key<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<T0>,
+        ) -> Arg<Address> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("hash_type_and_key"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn add_impl<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+            p1: Arg<T0>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("add_impl"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into(), p1.into()],
+                );
+        }
+        pub fn read_impl<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+        ) -> Arg<T0> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("read_impl"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn remove_impl<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+        ) -> Arg<T0> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("remove_impl"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn exists_impl(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("exists_impl"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn exists_with_type_impl<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("exists_with_type_impl"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
                     vec![p0.into()],
                 )
                 .into()
