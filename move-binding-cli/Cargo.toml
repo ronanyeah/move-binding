@@ -16,5 +16,5 @@ serde_json = "1.0.151"
 sui-rpc = { workspace = true }
 sui-sdk-types = { workspace = true }
 summary-parser = { path = "../summary-parser" }
-syn = { version = "3.0.3", features = ["full"] }
+syn = { version = "3.0.5", features = ["full"] }
 tokio = { version = "1.53.1", features = ["full"] }

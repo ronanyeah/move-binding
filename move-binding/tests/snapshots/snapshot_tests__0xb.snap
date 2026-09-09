@@ -3141,6 +3141,21 @@ pub mod bridge {
                 pub name: T0,
             }
         }
+        pub mod forwarding_address {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "forwarding_address";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct ForwardingAddressRegistry {
+                pub id: Address,
+            }
+        }
         pub mod funds_accumulator {
             use move_binding_derive::{MoveStruct, Key};
             use move_types::{MoveType, Address, Identifier, StructTag};
@@ -3615,6 +3630,21 @@ pub mod bridge {
             pub struct Permit<T0> {
                 pub dummy_field: bool,
                 phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct BorrowMarker<T0> {
+                pub pos0: u64,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct BorrowMarkerKey {
+                pub dummy_field: bool,
             }
         }
         pub mod sui {

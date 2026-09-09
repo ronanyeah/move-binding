@@ -4,7 +4,7 @@ expression: pretty
 ---
 #[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 pub mod sui {
-    pub const PACKAGE_VERSION: u64 = 57u64;
+    pub const PACKAGE_VERSION: u64 = 59u64;
     pub mod accumulator {
         use move_binding_derive::{MoveStruct, Key};
         use move_types::{MoveType, Address, Identifier};
@@ -6928,6 +6928,33 @@ pub mod sui {
                 );
         }
     }
+    pub mod forwarding_address {
+        use move_binding_derive::{MoveStruct, Key};
+        use move_types::{MoveType, Address, Identifier};
+        use move_types::functions::{Arg, Ref, MutRef};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x0000000000000000000000000000000000000000000000000000000000000002",
+        );
+        pub const MODULE_NAME: &str = "forwarding_address";
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct ForwardingAddressRegistry {
+            pub id: Address,
+        }
+        pub fn create<'a>(builder: &mut sui_transaction_builder::TransactionBuilder) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("create"),
+                    ),
+                    vec![],
+                );
+        }
+    }
     pub mod funds_accumulator {
         use move_binding_derive::{MoveStruct, Key};
         use move_types::{MoveType, Address, Identifier};
@@ -9827,6 +9854,20 @@ pub mod sui {
                 )
                 .into()
         }
+        pub fn forwarding_address_registry(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+        ) -> Arg<Address> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("forwarding_address_registry"),
+                    ),
+                    vec![],
+                )
+                .into()
+        }
         pub fn uid_as_inner<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Ref<'a, Address>,
@@ -9998,6 +10039,7 @@ pub mod sui {
         pub fn new_uid_from_hash(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Arg<Address>,
+            p1: Arg<Address>,
         ) -> Arg<Address> {
             builder
                 .move_call(
@@ -10006,7 +10048,7 @@ pub mod sui {
                         Identifier::from_static(MODULE_NAME),
                         Identifier::from_static("new_uid_from_hash"),
                     ),
-                    vec![p0.into()],
+                    vec![p0.into(), p1.into()],
                 )
                 .into()
         }
@@ -10024,18 +10066,19 @@ pub mod sui {
                     vec![p0.into()],
                 );
         }
-        pub fn record_new_uid(
+        pub fn record_new_uid_from_hash(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Arg<Address>,
+            p1: Arg<Address>,
         ) {
             builder
                 .move_call(
                     sui_transaction_builder::Function::new(
                         PACKAGE_ID,
                         Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("record_new_uid"),
+                        Identifier::from_static("record_new_uid_from_hash"),
                     ),
-                    vec![p0.into()],
+                    vec![p0.into(), p1.into()],
                 );
         }
     }
@@ -10803,6 +10846,37 @@ pub mod sui {
                     ),
                     vec![p0.into(), p1.into()],
                 );
+        }
+        pub fn original_package_id<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::package::UpgradeCap>,
+        ) -> Arg<Address> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("original_package_id"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn original_package_id_impl(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+            p1: Arg<u64>,
+        ) -> Arg<Address> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("original_package_id_impl"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
         }
         pub fn restrict<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
@@ -12035,6 +12109,21 @@ pub mod sui {
             pub dummy_field: bool,
             phantom_data_0: std::marker::PhantomData<T0>,
         }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct BorrowMarker<T0> {
+            pub pos0: u64,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct BorrowMarkerKey {
+            pub dummy_field: bool,
+        }
         pub fn permit<T0: MoveType>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Arg<crate::sui::move_std::internal::Permit<T0>>,
@@ -12185,6 +12274,59 @@ pub mod sui {
                         )
                         .with_type_args(vec![T0::type_(), T1::type_(), T2::type_()]),
                     vec![p1.into(), p2.into(), p3.into()],
+                )
+                .into()
+        }
+        pub fn begin_borrow<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+        ) -> (Arg<T1>, Arg<crate::sui::scratch::BorrowMarker<T1>>) {
+            let __ret = builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("begin_borrow"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into()],
+                )
+                .to_nested(2usize);
+            let __r0 = __ret[0usize].into();
+            let __r1 = __ret[1usize].into();
+            (__r0, __r1)
+        }
+        pub fn end_borrow<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p1: Arg<crate::sui::scratch::Permit<T0>>,
+            p2: Arg<T0>,
+            p3: Arg<T1>,
+            p4: Arg<crate::sui::scratch::BorrowMarker<T1>>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("end_borrow"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p1.into(), p2.into(), p3.into(), p4.into()],
+                );
+        }
+        pub fn borrow_marker<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+        ) -> Arg<crate::sui::scratch::BorrowMarker<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("borrow_marker"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![],
                 )
                 .into()
         }

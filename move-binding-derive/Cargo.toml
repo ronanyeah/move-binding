@@ -17,7 +17,7 @@ proc-macro2 = "1.0.107"
 quote = "1.0.47"
 sui-sdk-types = { workspace = true }
 sui-transaction-builder = { workspace = true }
-syn = "3.0.3"
+syn = "3.0.5"
 
 [dev-dependencies]
 bcs = "0.2.1"
