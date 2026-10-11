@@ -2520,6 +2520,102 @@ pub mod bridge {
                 pub pos0: Address,
             }
         }
+        pub mod allowance {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "allowance";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AllowanceWithdrawal<T0> {
+                pub allowance: Address,
+                pub is_sponsor: bool,
+                pub inner: crate::bridge::sui::funds_accumulator::Withdrawal<T0>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Allowance<T0> {
+                pub id: Address,
+                pub settings: crate::bridge::sui::allowance::Settings,
+                pub current_spend: move_types::U256,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Settings {
+                pub funder: Address,
+                pub spender: Option<Address>,
+                pub app: Option<String>,
+                pub lifetime_cap: Option<move_types::U256>,
+                pub start_timestamp_ms: Option<u64>,
+                pub expiration_timestamp_ms: Option<u64>,
+                pub rate_limit: Option<crate::bridge::sui::allowance::RateLimit>,
+                pub name: String,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AllowanceCap<T0> {
+                pub id: Address,
+                pub allowance: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AllowanceProposal<T0> {
+                pub pos0: crate::bridge::sui::allowance::Settings,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct SpendPermit<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct SettingsPermit<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum RateLimit {
+                Windowed {
+                    limit: move_types::U256,
+                    spent: move_types::U256,
+                    anchor_ms: Option<u64>,
+                    index: u64,
+                    window: crate::bridge::sui::allowance::Window,
+                },
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum Window {
+                PeriodicMs(u64),
+                CalendarMonths(u8),
+            }
+        }
         pub mod authenticator_state {
             use move_binding_derive::{MoveStruct, Key};
             use move_types::{MoveType, Address, Identifier, StructTag};

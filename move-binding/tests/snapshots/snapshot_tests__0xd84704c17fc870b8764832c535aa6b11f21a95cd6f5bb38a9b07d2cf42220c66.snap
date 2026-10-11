@@ -4,7 +4,7 @@ expression: pretty
 ---
 #[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 pub mod walrus {
-    pub const PACKAGE_VERSION: u64 = 3u64;
+    pub const PACKAGE_VERSION: u64 = 4u64;
     pub mod active_set {
         use move_binding_derive::{MoveStruct, Key};
         use move_types::{MoveType, Address, Identifier};
@@ -109,6 +109,21 @@ pub mod walrus {
                         PACKAGE_ID,
                         Identifier::from_static(MODULE_NAME),
                         Identifier::from_static("remove"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                );
+        }
+        pub fn set_max_size<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::active_set::ActiveSet>,
+            p1: Arg<u16>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("set_max_size"),
                     ),
                     vec![p0.into(), p1.into()],
                 );
@@ -2759,7 +2774,7 @@ pub mod walrus {
                 )
                 .into()
         }
-        pub fn certified_event_blob_message(
+        pub fn certified_system_blob_message(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: Arg<move_types::U256>,
         ) -> Arg<crate::walrus::messages::CertifiedBlobMessage> {
@@ -2768,7 +2783,7 @@ pub mod walrus {
                     sui_transaction_builder::Function::new(
                         PACKAGE_ID,
                         Identifier::from_static(MODULE_NAME),
-                        Identifier::from_static("certified_event_blob_message"),
+                        Identifier::from_static("certified_system_blob_message"),
                     ),
                     vec![p0.into()],
                 )
@@ -3464,6 +3479,22 @@ pub mod walrus {
                 )
                 .into()
         }
+        pub fn latest_value_at<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::pending_values::PendingValues>,
+            p1: Arg<u32>,
+        ) -> Arg<Option<u64>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("latest_value_at"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
         pub fn flush<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
             p0: MutRef<'a, crate::walrus::pending_values::PendingValues>,
@@ -3974,6 +4005,283 @@ pub mod walrus {
                         Identifier::from_static("add_vote"),
                     ),
                     vec![p0.into(), p1.into(), p2.into()],
+                );
+        }
+    }
+    pub mod snapshot_blob {
+        use move_binding_derive::{MoveStruct, Key};
+        use move_types::{MoveType, Address, Identifier};
+        use move_types::functions::{Arg, Ref, MutRef};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0xd84704c17fc870b8764832c535aa6b11f21a95cd6f5bb38a9b07d2cf42220c66",
+        );
+        pub const MODULE_NAME: &str = "snapshot_blob";
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x7d3b2086808a62bbc44d18c6b1d407973d77dd26946735873092c2f5650b4611"
+        )]
+        pub struct SnapshotBlob {
+            pub epoch: u32,
+            pub blob_id: move_types::U256,
+            pub end_epoch: u32,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x7d3b2086808a62bbc44d18c6b1d407973d77dd26946735873092c2f5650b4611"
+        )]
+        pub struct SnapshotBlobCertificationState {
+            pub certified: Vec<crate::walrus::snapshot_blob::SnapshotBlob>,
+            pub tally_epoch: u32,
+            pub aggregate_weight_per_blob: crate::walrus::sui::vec_map::VecMap<
+                move_types::U256,
+                u16,
+            >,
+            pub attested_nodes: crate::walrus::sui::vec_set::VecSet<Address>,
+        }
+        pub fn epoch<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlob>,
+        ) -> Arg<u32> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("epoch"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn end_epoch<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlob>,
+        ) -> Arg<u32> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("end_epoch"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn blob_id<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlob>,
+        ) -> Arg<move_types::U256> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("blob_id"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn create_with_empty_state(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+        ) -> Arg<crate::walrus::snapshot_blob::SnapshotBlobCertificationState> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("create_with_empty_state"),
+                    ),
+                    vec![],
+                )
+                .into()
+        }
+        pub fn certified_history<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+        ) -> Ref<'a, Vec<crate::walrus::snapshot_blob::SnapshotBlob>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("certified_history"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn latest_certified<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+        ) -> Arg<Option<crate::walrus::snapshot_blob::SnapshotBlob>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("latest_certified"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn certified_for_epoch<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p1: Arg<u32>,
+        ) -> Arg<Option<crate::walrus::snapshot_blob::SnapshotBlob>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("certified_for_epoch"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
+        pub fn get_latest_certified_epoch<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+        ) -> Arg<Option<u32>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("get_latest_certified_epoch"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn get_latest_certified_blob_id<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+        ) -> Arg<Option<move_types::U256>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("get_latest_certified_blob_id"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn get_num_tracked_blobs<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+        ) -> Arg<u64> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("get_num_tracked_blobs"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn is_epoch_certified<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p1: Arg<u32>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("is_epoch_certified"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
+        pub fn has_attested<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p1: Ref<'a, Address>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("has_attested"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
+        pub fn advance_tally_epoch<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p1: Arg<u32>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("advance_tally_epoch"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                );
+        }
+        pub fn record_attestation<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p1: Arg<Address>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("record_attestation"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                );
+        }
+        pub fn add_aggregate_weight<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p1: Arg<move_types::U256>,
+            p2: Arg<u16>,
+        ) -> Arg<u16> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("add_aggregate_weight"),
+                    ),
+                    vec![p0.into(), p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn certify<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p1: Arg<u32>,
+            p2: Arg<move_types::U256>,
+            p3: Arg<u32>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("certify"),
+                    ),
+                    vec![p0.into(), p1.into(), p2.into(), p3.into()],
                 );
         }
     }
@@ -5817,6 +6125,20 @@ pub mod walrus {
                     vec![p0.into(), p1.into()],
                 )
                 .into()
+        }
+        pub fn update_active_set_max_size<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::staking_inner::StakingInnerV1>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("update_active_set_max_size"),
+                    ),
+                    vec![p0.into()],
+                );
         }
     }
     pub mod staking_pool {
@@ -8140,6 +8462,13 @@ pub mod walrus {
             "0xd84704c17fc870b8764832c535aa6b11f21a95cd6f5bb38a9b07d2cf42220c66",
         );
         pub const MODULE_NAME: &str = "system";
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x7d3b2086808a62bbc44d18c6b1d407973d77dd26946735873092c2f5650b4611"
+        )]
+        pub struct SnapshotStateKey {
+            pub dummy_field: bool,
+        }
         #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
         #[move_struct(
             origin = "0xd84704c17fc870b8764832c535aa6b11f21a95cd6f5bb38a9b07d2cf42220c66"
@@ -8277,6 +8606,44 @@ pub mod walrus {
                         p6.into(), p7.into()
                     ],
                 );
+        }
+        pub fn certify_snapshot_blob<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::system::System>,
+            p1: Ref<'a, crate::walrus::storage_node::StorageNodeCap>,
+            p2: Arg<move_types::U256>,
+            p3: Arg<move_types::U256>,
+            p4: Arg<u64>,
+            p5: Arg<u8>,
+            p6: Arg<u32>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("certify_snapshot_blob"),
+                    ),
+                    vec![
+                        p0.into(), p1.into(), p2.into(), p3.into(), p4.into(), p5.into(),
+                        p6.into()
+                    ],
+                );
+        }
+        pub fn snapshot_blob_certification_state<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::walrus::system::System>,
+        ) -> Ref<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("snapshot_blob_certification_state"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
         }
         pub fn reserve_space<'a>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
@@ -9200,6 +9567,30 @@ pub mod walrus {
                         PACKAGE_ID,
                         Identifier::from_static(MODULE_NAME),
                         Identifier::from_static("certify_event_blob"),
+                    ),
+                    vec![
+                        p0.into(), p1.into(), p2.into(), p3.into(), p4.into(), p5.into(),
+                        p6.into(), p7.into()
+                    ],
+                );
+        }
+        pub fn certify_snapshot_blob<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::walrus::system_state_inner::SystemStateInnerV1>,
+            p1: MutRef<'a, crate::walrus::snapshot_blob::SnapshotBlobCertificationState>,
+            p2: Ref<'a, crate::walrus::storage_node::StorageNodeCap>,
+            p3: Arg<move_types::U256>,
+            p4: Arg<move_types::U256>,
+            p5: Arg<u64>,
+            p6: Arg<u8>,
+            p7: Arg<u32>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("certify_snapshot_blob"),
                     ),
                     vec![
                         p0.into(), p1.into(), p2.into(), p3.into(), p4.into(), p5.into(),
@@ -10224,6 +10615,102 @@ pub mod walrus {
             )]
             pub struct AliasKey {
                 pub pos0: Address,
+            }
+        }
+        pub mod allowance {
+            use move_binding_derive::{MoveStruct, Key};
+            use move_types::{MoveType, Address, Identifier, StructTag};
+            pub const PACKAGE_ID: Address = Address::from_static(
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+            );
+            pub const MODULE_NAME: &str = "allowance";
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AllowanceWithdrawal<T0> {
+                pub allowance: Address,
+                pub is_sponsor: bool,
+                pub inner: crate::walrus::sui::funds_accumulator::Withdrawal<T0>,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Allowance<T0> {
+                pub id: Address,
+                pub settings: crate::walrus::sui::allowance::Settings,
+                pub current_spend: move_types::U256,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct Settings {
+                pub funder: Address,
+                pub spender: Option<Address>,
+                pub app: Option<String>,
+                pub lifetime_cap: Option<move_types::U256>,
+                pub start_timestamp_ms: Option<u64>,
+                pub expiration_timestamp_ms: Option<u64>,
+                pub rate_limit: Option<crate::walrus::sui::allowance::RateLimit>,
+                pub name: String,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AllowanceCap<T0> {
+                pub id: Address,
+                pub allowance: Address,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct AllowanceProposal<T0> {
+                pub pos0: crate::walrus::sui::allowance::Settings,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct SpendPermit<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub struct SettingsPermit<T0> {
+                pub dummy_field: bool,
+                phantom_data_0: std::marker::PhantomData<T0>,
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum RateLimit {
+                Windowed {
+                    limit: move_types::U256,
+                    spent: move_types::U256,
+                    anchor_ms: Option<u64>,
+                    index: u64,
+                    window: crate::walrus::sui::allowance::Window,
+                },
+            }
+            #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+            #[move_struct(
+                origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )]
+            pub enum Window {
+                PeriodicMs(u64),
+                CalendarMonths(u8),
             }
         }
         pub mod authenticator_state {

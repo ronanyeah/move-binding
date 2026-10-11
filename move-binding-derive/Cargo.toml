@@ -17,10 +17,10 @@ proc-macro2 = "1.0.107"
 quote = "1.0.47"
 sui-sdk-types = { workspace = true }
 sui-transaction-builder = { workspace = true }
-syn = "3.0.5"
+syn = "3.0.7"
 
 [dev-dependencies]
 bcs = "0.2.1"
 serde = { workspace = true, features = ["derive"] }
 sui-rpc = { workspace = true }
-tokio = { version = "1.53.1", features = ["full"] }
+tokio = { version = "1.53.2", features = ["full"] }

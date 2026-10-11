@@ -4,7 +4,7 @@ expression: pretty
 ---
 #[allow(unused_imports, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 pub mod sui {
-    pub const PACKAGE_VERSION: u64 = 59u64;
+    pub const PACKAGE_VERSION: u64 = 60u64;
     pub mod accumulator {
         use move_binding_derive::{MoveStruct, Key};
         use move_types::{MoveType, Address, Identifier};
@@ -809,6 +809,775 @@ pub mod sui {
                         Identifier::from_static("remove"),
                     ),
                     vec![p0.into(), p1.into()],
+                );
+        }
+    }
+    pub mod allowance {
+        use move_binding_derive::{MoveStruct, Key};
+        use move_types::{MoveType, Address, Identifier};
+        use move_types::functions::{Arg, Ref, MutRef};
+        pub const PACKAGE_ID: Address = Address::from_static(
+            "0x0000000000000000000000000000000000000000000000000000000000000002",
+        );
+        pub const MODULE_NAME: &str = "allowance";
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct AllowanceWithdrawal<T0> {
+            pub allowance: Address,
+            pub is_sponsor: bool,
+            pub inner: crate::sui::funds_accumulator::Withdrawal<T0>,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct Allowance<T0> {
+            pub id: Address,
+            pub settings: crate::sui::allowance::Settings,
+            pub current_spend: move_types::U256,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct Settings {
+            pub funder: Address,
+            pub spender: Option<Address>,
+            pub app: Option<String>,
+            pub lifetime_cap: Option<move_types::U256>,
+            pub start_timestamp_ms: Option<u64>,
+            pub expiration_timestamp_ms: Option<u64>,
+            pub rate_limit: Option<crate::sui::allowance::RateLimit>,
+            pub name: String,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct, Key)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct AllowanceCap<T0> {
+            pub id: Address,
+            pub allowance: Address,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct AllowanceProposal<T0> {
+            pub pos0: crate::sui::allowance::Settings,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct SpendPermit<T0> {
+            pub dummy_field: bool,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub struct SettingsPermit<T0> {
+            pub dummy_field: bool,
+            phantom_data_0: std::marker::PhantomData<T0>,
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub enum RateLimit {
+            Windowed {
+                limit: move_types::U256,
+                spent: move_types::U256,
+                anchor_ms: Option<u64>,
+                index: u64,
+                window: crate::sui::allowance::Window,
+            },
+        }
+        #[derive(serde::Deserialize, serde::Serialize, Debug, MoveStruct)]
+        #[move_struct(
+            origin = "0x0000000000000000000000000000000000000000000000000000000000000002"
+        )]
+        pub enum Window {
+            PeriodicMs(u64),
+            CalendarMonths(u8),
+        }
+        pub fn spend_permit<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<crate::sui::move_std::internal::Permit<T0>>,
+        ) -> Arg<crate::sui::allowance::SpendPermit<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("spend_permit"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn settings_permit<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<crate::sui::move_std::internal::Permit<T0>>,
+        ) -> Arg<crate::sui::allowance::SettingsPermit<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("settings_permit"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn periodic_rate_limit(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<u64>,
+            p1: Arg<move_types::U256>,
+        ) -> Arg<crate::sui::allowance::RateLimit> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("periodic_rate_limit"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
+        pub fn calendar_rate_limit(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<u8>,
+            p1: Arg<move_types::U256>,
+        ) -> Arg<crate::sui::allowance::RateLimit> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("calendar_rate_limit"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
+        pub fn monthly_rate_limit(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<move_types::U256>,
+        ) -> Arg<crate::sui::allowance::RateLimit> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("monthly_rate_limit"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn quarterly_rate_limit(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<move_types::U256>,
+        ) -> Arg<crate::sui::allowance::RateLimit> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("quarterly_rate_limit"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn yearly_rate_limit(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<move_types::U256>,
+        ) -> Arg<crate::sui::allowance::RateLimit> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("yearly_rate_limit"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn new<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<String>,
+            p1: Arg<Address>,
+            p2: Arg<Option<move_types::U256>>,
+            p3: Arg<Option<u64>>,
+            p4: Arg<Option<u64>>,
+            p5: Arg<Option<crate::sui::allowance::RateLimit>>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("new"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![
+                        p0.into(), p1.into(), p2.into(), p3.into(), p4.into(), p5.into()
+                    ],
+                );
+        }
+        pub fn propose_for_app<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<String>,
+            p1: Arg<Address>,
+            p2: Arg<Option<move_types::U256>>,
+            p3: Arg<Option<u64>>,
+            p4: Arg<Option<u64>>,
+            p5: Arg<Option<crate::sui::allowance::RateLimit>>,
+        ) -> Arg<crate::sui::allowance::AllowanceProposal<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("propose_for_app"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![
+                        p0.into(), p1.into(), p2.into(), p3.into(), p4.into(), p5.into()
+                    ],
+                )
+                .into()
+        }
+        pub fn issue<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<crate::sui::allowance::AllowanceProposal<T0>>,
+            p1: Arg<crate::sui::allowance::SettingsPermit<T1>>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("issue"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p0.into(), p1.into()],
+                );
+        }
+        pub fn balance_spend<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<
+                'a,
+                crate::sui::allowance::Allowance<crate::sui::balance::Balance<T0>>,
+            >,
+            p1: Arg<
+                crate::sui::allowance::AllowanceWithdrawal<
+                    crate::sui::balance::Balance<T0>,
+                >,
+            >,
+            p2: Ref<'a, crate::sui::clock::Clock>,
+        ) -> Arg<crate::sui::balance::Balance<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("balance_spend"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into(), p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn app_balance_spend<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<
+                'a,
+                crate::sui::allowance::Allowance<crate::sui::balance::Balance<T0>>,
+            >,
+            p1: Arg<crate::sui::allowance::SpendPermit<T1>>,
+            p2: Arg<
+                crate::sui::allowance::AllowanceWithdrawal<
+                    crate::sui::balance::Balance<T0>,
+                >,
+            >,
+            p3: Ref<'a, crate::sui::clock::Clock>,
+        ) -> Arg<crate::sui::balance::Balance<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("app_balance_spend"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p0.into(), p1.into(), p2.into(), p3.into()],
+                )
+                .into()
+        }
+        pub fn revoke<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<crate::sui::allowance::AllowanceCap<T0>>,
+            p1: Arg<crate::sui::allowance::Allowance<T0>>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("revoke"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into(), p1.into()],
+                );
+        }
+        pub fn rotate_spender<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::sui::allowance::Allowance<T0>>,
+            p1: Arg<crate::sui::allowance::SettingsPermit<T1>>,
+            p2: Arg<Address>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("rotate_spender"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p0.into(), p1.into(), p2.into()],
+                );
+        }
+        pub fn allowance_settings<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Allowance<T0>>,
+        ) -> Ref<'a, crate::sui::allowance::Settings> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("allowance_settings"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn allowance_current_spend<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Allowance<T0>>,
+        ) -> Arg<move_types::U256> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("allowance_current_spend"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn allowance_cap_allowance<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::AllowanceCap<T0>>,
+        ) -> Arg<Address> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("allowance_cap_allowance"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn allowance_proposal_settings<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::AllowanceProposal<T0>>,
+        ) -> Ref<'a, crate::sui::allowance::Settings> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("allowance_proposal_settings"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn funder<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Arg<Address> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("funder"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn spender<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Arg<Option<Address>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("spender"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn app<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Arg<Option<String>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("app"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn lifetime_cap<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Arg<Option<move_types::U256>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("lifetime_cap"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn start_timestamp_ms<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Arg<Option<u64>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("start_timestamp_ms"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn expiration_timestamp_ms<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Arg<Option<u64>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("expiration_timestamp_ms"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn rate_limit<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Arg<Option<crate::sui::allowance::RateLimit>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("rate_limit"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn name<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Settings>,
+        ) -> Ref<'a, String> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("name"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn rate_limit_limit<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::RateLimit>,
+        ) -> Arg<move_types::U256> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("rate_limit_limit"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn rate_limit_spent<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::RateLimit>,
+        ) -> Arg<move_types::U256> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("rate_limit_spent"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn rate_limit_window<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::RateLimit>,
+        ) -> Arg<crate::sui::allowance::Window> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("rate_limit_window"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn civil_from_ms(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<u64>,
+        ) -> (Arg<u64>, Arg<u64>, Arg<u64>) {
+            let __ret = builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("civil_from_ms"),
+                    ),
+                    vec![p0.into()],
+                )
+                .to_nested(3usize);
+            let __r0 = __ret[0usize].into();
+            let __r1 = __ret[1usize].into();
+            let __r2 = __ret[2usize].into();
+            (__r0, __r1, __r2)
+        }
+        pub fn days_in_month(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<u64>,
+            p1: Arg<u64>,
+        ) -> Arg<u64> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("days_in_month"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
+        pub fn assert_app<'a, T0: MoveType, T1: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Allowance<T0>>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("assert_app"),
+                        )
+                        .with_type_args(vec![T0::type_(), T1::type_()]),
+                    vec![p0.into()],
+                );
+        }
+        pub fn consume<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::sui::allowance::Allowance<T0>>,
+            p1: Arg<crate::sui::allowance::AllowanceWithdrawal<T0>>,
+            p2: Ref<'a, crate::sui::clock::Clock>,
+        ) -> Arg<crate::sui::funds_accumulator::Withdrawal<T0>> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("consume"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into(), p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn new_rate_limit(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<move_types::U256>,
+            p1: Arg<crate::sui::allowance::Window>,
+        ) -> Arg<crate::sui::allowance::RateLimit> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("new_rate_limit"),
+                    ),
+                    vec![p0.into(), p1.into()],
+                )
+                .into()
+        }
+        pub fn charge<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: MutRef<'a, crate::sui::allowance::RateLimit>,
+            p1: Arg<move_types::U256>,
+            p2: Arg<u64>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("charge"),
+                    ),
+                    vec![p0.into(), p1.into(), p2.into()],
+                );
+        }
+        pub fn index_at<'a>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Ref<'a, crate::sui::allowance::Window>,
+            p1: Arg<u64>,
+            p2: Arg<u64>,
+        ) -> Arg<u64> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("index_at"),
+                    ),
+                    vec![p0.into(), p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn elapsed_windows(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<u64>,
+            p1: Arg<u64>,
+            p2: Arg<u8>,
+        ) -> Arg<u64> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("elapsed_windows"),
+                    ),
+                    vec![p0.into(), p1.into(), p2.into()],
+                )
+                .into()
+        }
+        pub fn is_leap_year(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<u64>,
+        ) -> Arg<bool> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("is_leap_year"),
+                    ),
+                    vec![p0.into()],
+                )
+                .into()
+        }
+        pub fn new_settings(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+            p1: Arg<Address>,
+            p2: Arg<Option<String>>,
+            p3: Arg<Option<move_types::U256>>,
+            p4: Arg<Option<u64>>,
+            p5: Arg<Option<u64>>,
+            p6: Arg<Option<crate::sui::allowance::RateLimit>>,
+            p7: Arg<String>,
+        ) -> Arg<crate::sui::allowance::Settings> {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                        PACKAGE_ID,
+                        Identifier::from_static(MODULE_NAME),
+                        Identifier::from_static("new_settings"),
+                    ),
+                    vec![
+                        p0.into(), p1.into(), p2.into(), p3.into(), p4.into(), p5.into(),
+                        p6.into(), p7.into()
+                    ],
+                )
+                .into()
+        }
+        pub fn share_new<'a, T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<crate::sui::allowance::Settings>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static("share_new"),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into()],
                 );
         }
     }
@@ -7138,6 +7907,24 @@ pub mod sui {
                     vec![p0.into(), p1.into(), p2.into()],
                 )
                 .into()
+        }
+        pub fn reserve_object_funds_for_withdrawal<T0: MoveType>(
+            builder: &mut sui_transaction_builder::TransactionBuilder,
+            p0: Arg<Address>,
+            p1: Arg<move_types::U256>,
+        ) {
+            builder
+                .move_call(
+                    sui_transaction_builder::Function::new(
+                            PACKAGE_ID,
+                            Identifier::from_static(MODULE_NAME),
+                            Identifier::from_static(
+                                "reserve_object_funds_for_withdrawal",
+                            ),
+                        )
+                        .with_type_args(vec![T0::type_()]),
+                    vec![p0.into(), p1.into()],
+                );
         }
         pub fn create_withdrawal<T0: MoveType>(
             builder: &mut sui_transaction_builder::TransactionBuilder,
