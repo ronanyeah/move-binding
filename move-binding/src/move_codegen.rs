@@ -612,25 +612,25 @@ impl LocalCodegen {
         }
 
         // Bindings:
-        // - Mains first: every address in a main's type_origin_table → its alias.
-        // - Then deps overwrite: each non-main address from any address_mapping
-        //   gets remapped to its own dep alias. First-seen alias wins across
-        //   summaries.
+        // - Mains first: the main package's own address plus the defining
+        //   addresses of types *it* owns → its alias. Dependencies present in
+        //   the same summary's type-origin table are not claimed here.
+        // - Then deps: each address not already bound by a main gets its own dep
+        //   alias. First-seen alias wins across summaries.
         let mut bindings: HashMap<AccountAddress, String> = HashMap::new();
         for (main_addr, summary, alias) in &mains {
-            summary
-                .type_origin_table
-                .iter()
-                .flat_map(|(_, m)| m.values())
-                .for_each(|addr| {
-                    bindings.insert(*addr, format!("{base_path}::{alias}"));
-                });
-            bindings.insert(*main_addr, format!("{base_path}::{alias}"));
+            let path = format!("{base_path}::{alias}");
+            if let Some(modules) = summary.type_origin_table.get(main_addr) {
+                for addr in modules.values().flat_map(|m| m.values()) {
+                    bindings.entry(*addr).or_insert_with(|| path.clone());
+                }
+            }
+            bindings.insert(*main_addr, path);
         }
         let mut seen_deps: HashSet<AccountAddress> = HashSet::new();
         for (summary, _) in inputs {
             for (name, addr) in &summary.address_mapping {
-                if main_addr_set.contains(addr) {
+                if main_addr_set.contains(addr) || bindings.contains_key(addr) {
                     continue;
                 }
                 if !seen_deps.insert(*addr) {
@@ -669,7 +669,8 @@ impl LocalCodegen {
                         Ident::new(module_name.as_str(), proc_macro2::Span::call_site());
                     let type_origin_table = summary
                         .type_origin_table
-                        .get(module_name.as_str())
+                        .get(main_addr)
+                        .and_then(|modules| modules.get(module_name.as_str()))
                         .cloned()
                         .unwrap_or_default();
 

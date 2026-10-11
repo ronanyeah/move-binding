@@ -240,7 +240,10 @@ async fn fetch_summary_from_chain(
     }));
 
     Ok(summary_parser::Summary {
-        type_origin_table: summary_parser::build_type_origin_table_from_summaries(&packages),
+        type_origin_table: summary_parser::build_type_origin_table(
+            &packages,
+            additional_metadata.as_ref(),
+        ),
         packages,
         address_mapping,
         additional_metadata,

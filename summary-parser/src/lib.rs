@@ -17,8 +17,15 @@ pub struct Summary {
     pub packages: move_model_2::summary::Packages,
     pub address_mapping: BTreeMap<Symbol, AccountAddress>,
     pub additional_metadata: Option<serde_json::Value>,
-    pub type_origin_table: HashMap<String, HashMap<String, AccountAddress>>,
+    pub type_origin_table: TypeOriginTable,
 }
+
+/// package address → module name → type name → defining (type-origin) address.
+///
+/// Keyed by package first: different packages routinely define the same
+/// `module::Type` name (e.g. `state::State`), so module + type alone is ambiguous.
+pub type TypeOriginTable =
+    HashMap<AccountAddress, HashMap<String, HashMap<String, AccountAddress>>>;
 
 /// Parse summary files from a directory path and return the structures
 /// that match the output_summaries function signature.
@@ -51,7 +58,7 @@ pub fn parse_summaries(summaries_dir: &Path) -> Result<Summary> {
         parse_packages(summaries_dir, &mut address_mapping).context("Failed to parse packages")?;
 
     Ok(Summary {
-        type_origin_table: build_type_origin_table_from_summaries(&packages),
+        type_origin_table: build_type_origin_table(&packages, additional_metadata.as_ref()),
         packages,
         address_mapping,
         additional_metadata,
@@ -89,7 +96,7 @@ pub fn parse_pieces(summaries_dir: &Path) -> Result<Summary> {
         parse_packages(summaries_dir, &mut address_mapping).context("Failed to parse packages")?;
 
     Ok(Summary {
-        type_origin_table: build_type_origin_table_from_summaries(&packages),
+        type_origin_table: build_type_origin_table(&packages, additional_metadata.as_ref()),
         packages,
         address_mapping,
         additional_metadata,
@@ -98,38 +105,79 @@ pub fn parse_pieces(summaries_dir: &Path) -> Result<Summary> {
 
 pub fn build_type_origin_table_from_summaries(
     packages: &move_model_2::summary::Packages,
-) -> HashMap<String, HashMap<String, AccountAddress>> {
-    let mut type_origin_table: HashMap<String, HashMap<String, AccountAddress>> = HashMap::new();
+) -> TypeOriginTable {
+    let mut type_origin_table: TypeOriginTable = HashMap::new();
 
     for (package_address, package) in &packages.packages {
         if package_address == &AccountAddress::ONE || package_address == &AccountAddress::TWO {
             continue;
         }
+        let package_entry = type_origin_table.entry(*package_address).or_default();
         for (module_name, module) in &package.modules {
-            let module_name_str = module_name.as_str();
-            let module_entry = type_origin_table
-                .entry(module_name_str.to_string())
+            let module_entry = package_entry
+                .entry(module_name.as_str().to_string())
                 .or_default();
 
-            // Add all structs from this module with their defining package address
-            for (struct_name, _struct_def) in &module.structs {
-                module_entry.insert(
-                    struct_name.as_str().to_string(),
-                    *package_address, // The package address where this struct is defined
-                );
+            // Default to the package address; metadata `type_origins` refine this
+            // for types introduced by a later upgrade.
+            for struct_name in module.structs.keys() {
+                module_entry.insert(struct_name.as_str().to_string(), *package_address);
             }
-
-            // Add all enums from this module with their defining package address
-            for (enum_name, _enum_def) in &module.enums {
-                module_entry.insert(
-                    enum_name.as_str().to_string(),
-                    *package_address, // The package address where this enum is defined
-                );
+            for enum_name in module.enums.keys() {
+                module_entry.insert(enum_name.as_str().to_string(), *package_address);
             }
         }
     }
 
     type_origin_table
+}
+
+/// Build the type-origin table, then overlay the root package's authoritative
+/// `type_origins` from the metadata (when present) to get the defining address
+/// of types introduced in upgrades.
+pub fn build_type_origin_table(
+    packages: &move_model_2::summary::Packages,
+    metadata: Option<&serde_json::Value>,
+) -> TypeOriginTable {
+    let mut table = build_type_origin_table_from_summaries(packages);
+    let parse_addr = |v: &serde_json::Value| {
+        v.as_str()
+            .and_then(|s| AccountAddress::from_hex_literal(s).ok())
+    };
+    let Some(meta) = metadata else {
+        return table;
+    };
+    let Some(root) = meta.get("root_package_original_id").and_then(parse_addr) else {
+        return table;
+    };
+    let Some(origins) = meta.get("type_origins").and_then(|v| v.as_array()) else {
+        return table;
+    };
+    let field = |o: &serde_json::Value, snake: &str, camel: &str| {
+        o.get(snake).or_else(|| o.get(camel)).cloned()
+    };
+    for origin in origins {
+        let (Some(module), Some(name), Some(defining)) = (
+            field(origin, "module_name", "moduleName"),
+            field(origin, "datatype_name", "datatypeName"),
+            field(origin, "package_id", "packageId"),
+        ) else {
+            continue;
+        };
+        let (Some(module), Some(name), Some(defining)) =
+            (module.as_str(), name.as_str(), parse_addr(&defining))
+        else {
+            continue;
+        };
+        if let Some(slot) = table
+            .get_mut(&root)
+            .and_then(|m| m.get_mut(module))
+            .and_then(|t| t.get_mut(name))
+        {
+            *slot = defining;
+        }
+    }
+    table
 }
 
 /// Parse the address_mapping.json file
