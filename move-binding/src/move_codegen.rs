@@ -152,7 +152,7 @@ impl MoveCodegen {
                     Some(quote! {
                         pub mod #module_ident {
                             use move_binding_derive::{MoveStruct, Key};
-                            use move_types::{MoveType, Address, Identifier, StructTag};
+                            use move_types::{MoveType, Address, Identifier};
                             pub const PACKAGE_ID: Address = Address::from_static(#addr_hex);
                             pub const MODULE_NAME: &str = #module_name;
                             #(#all_tokens)*
@@ -218,7 +218,7 @@ impl MoveCodegen {
             },
         );
 
-        let struct_ident = Ident::new(&struct_name.to_string(), proc_macro2::Span::call_site());
+        let struct_ident = Ident::new(struct_name, proc_macro2::Span::call_site());
         let field_tokens = move_struct
             .fields
             .0
@@ -294,7 +294,7 @@ impl MoveCodegen {
             })
             .collect();
 
-        let enum_ident = Ident::new(&enum_name.to_string(), proc_macro2::Span::call_site());
+        let enum_ident = Ident::new(enum_name, proc_macro2::Span::call_site());
         let variant_tokens = move_enum.variants.iter().map(|(_, variant)| {
             let variant_ident = Ident::new(
                 &escape_keyword(&variant.name.as_str()),
@@ -546,6 +546,64 @@ struct StubDef {
     fields: Vec<(String, String)>,
 }
 
+/// Restricts which parts of the main packages are generated.
+///
+/// With no selection (the default) everything is emitted. Otherwise only the
+/// selected functions are emitted, together with the structs/enums they
+/// reference (transitively through fields). Dependency types are stubbed as
+/// usual, but only when something kept references them.
+#[derive(Debug, Clone, Default)]
+pub struct CodegenOptions {
+    /// Modules whose functions are all emitted.
+    pub modules: Vec<String>,
+    /// Individual `(module, function)` selections.
+    pub functions: Vec<(String, String)>,
+}
+
+impl CodegenOptions {
+    fn is_filtering(&self) -> bool {
+        !self.modules.is_empty() || !self.functions.is_empty()
+    }
+
+    fn selects_fun(&self, module: &str, fun: &str) -> bool {
+        self.modules.iter().any(|m| m == module)
+            || self.functions.iter().any(|(m, f)| m == module && f == fun)
+    }
+}
+
+/// What survives a [`CodegenOptions`] filter.
+struct Selection {
+    /// `(module, function)`.
+    funs: HashSet<(move_symbol_pool::Symbol, move_symbol_pool::Symbol)>,
+    /// `(package address, module, datatype)` in the main packages.
+    types: HashSet<(
+        AccountAddress,
+        move_symbol_pool::Symbol,
+        move_symbol_pool::Symbol,
+    )>,
+}
+
+/// Appends every datatype mentioned by `ty` as `(address, module, name)`.
+fn collect_datatypes(
+    ty: &move_model_2::summary::Type,
+    ctx: &CodegenCtx,
+    out: &mut Vec<(AccountAddress, move_symbol_pool::Symbol, move_symbol_pool::Symbol)>,
+) {
+    use move_model_2::summary::Type;
+    match ty {
+        Type::Datatype(d) => {
+            if let Some(addr) = ctx.tags.get(&d.module.address) {
+                out.push((*addr, d.module.name, d.name));
+            }
+            for arg in &d.type_arguments {
+                collect_datatypes(&arg.argument, ctx, out);
+            }
+        }
+        Type::Vector(t) | Type::Reference(_, t) => collect_datatypes(t, ctx, out),
+        _ => {}
+    }
+}
+
 pub struct LocalCodegen;
 
 impl LocalCodegen {
@@ -562,6 +620,20 @@ impl LocalCodegen {
         inputs: &[(&summary_parser::Summary, &str)],
         base_path: &str,
         package_version: Option<u64>,
+    ) -> Result<TokenStream, anyhow::Error> {
+        Self::expand_multi_with_options(
+            inputs,
+            base_path,
+            package_version,
+            &CodegenOptions::default(),
+        )
+    }
+
+    pub fn expand_multi_with_options(
+        inputs: &[(&summary_parser::Summary, &str)],
+        base_path: &str,
+        package_version: Option<u64>,
+        options: &CodegenOptions,
     ) -> Result<TokenStream, anyhow::Error> {
         if inputs.is_empty() {
             return Err(anyhow!("at least one input is required"));
@@ -652,6 +724,12 @@ impl LocalCodegen {
             ..Default::default()
         };
 
+        let selection = if options.is_filtering() {
+            Some(Self::select(&mains, options, &ctx)?)
+        } else {
+            None
+        };
+
         // Generate main package modules per input.
         let version = package_version.unwrap_or(1);
         let mut main_pkg_tokens = vec![];
@@ -674,14 +752,35 @@ impl LocalCodegen {
                         .cloned()
                         .unwrap_or_default();
 
-                    let mut struct_fun_tokens =
-                        Self::create_structs(&module.structs, &type_origin_table, &ctx)?;
+                    let keep_type = |name: &str| {
+                        selection.as_ref().is_none_or(|sel| {
+                            sel.types.contains(&(
+                                *main_addr,
+                                *module_name,
+                                move_symbol_pool::Symbol::from(name),
+                            ))
+                        })
+                    };
+                    let keep_fun = |name: &str| {
+                        selection.as_ref().is_none_or(|sel| {
+                            sel.funs
+                                .contains(&(*module_name, move_symbol_pool::Symbol::from(name)))
+                        })
+                    };
+
+                    let mut struct_fun_tokens = Self::create_structs(
+                        &module.structs,
+                        &type_origin_table,
+                        &ctx,
+                        &keep_type,
+                    )?;
                     struct_fun_tokens.extend(Self::create_enums(
                         &module.enums,
                         &type_origin_table,
                         &ctx,
+                        &keep_type,
                     ));
-                    struct_fun_tokens.extend(Self::create_funs(&module.functions, &ctx));
+                    struct_fun_tokens.extend(Self::create_funs(&module.functions, &ctx, &keep_fun));
 
                     Ok::<_, anyhow::Error>(if struct_fun_tokens.is_empty() {
                         quote! {}
@@ -723,6 +822,89 @@ impl LocalCodegen {
             #(#main_pkg_tokens)*
             #(#stub_tokens)*
         })
+    }
+
+    /// Resolves `options` against the main packages: the kept functions, and the
+    /// main-package datatypes reachable from their signatures.
+    fn select(
+        mains: &[(AccountAddress, &summary_parser::Summary, &str)],
+        options: &CodegenOptions,
+        ctx: &CodegenCtx,
+    ) -> Result<Selection, anyhow::Error> {
+        use move_symbol_pool::Symbol;
+
+        let mut funs: HashSet<(Symbol, Symbol)> = HashSet::new();
+        let mut pending = vec![];
+        for (main_addr, summary, _) in mains {
+            let Some(pkg) = summary.packages.packages.get(main_addr) else {
+                continue;
+            };
+            for (module_name, module) in &pkg.modules {
+                for (fun_name, fun) in &module.functions {
+                    if !options.selects_fun(module_name.as_str(), fun_name.as_str()) {
+                        continue;
+                    }
+                    funs.insert((*module_name, *fun_name));
+                    for param in &fun.parameters {
+                        collect_datatypes(&param_type(param)?, ctx, &mut pending);
+                    }
+                    for ty in &fun.return_ {
+                        collect_datatypes(ty, ctx, &mut pending);
+                    }
+                }
+            }
+        }
+
+        // Typos should fail loudly rather than silently generate nothing.
+        let known = |module: &str, fun: Option<&str>| {
+            funs.iter()
+                .any(|(m, f)| m.as_str() == module && fun.is_none_or(|fun| f.as_str() == fun))
+        };
+        for module in &options.modules {
+            if !known(module, None) {
+                return Err(anyhow!(
+                    "module '{module}' has no functions in the given packages"
+                ));
+            }
+        }
+        for (module, fun) in &options.functions {
+            if !known(module, Some(fun)) {
+                return Err(anyhow!(
+                    "function '{module}::{fun}' not found in the given packages"
+                ));
+            }
+        }
+
+        // Close over struct/enum fields, staying inside the main packages
+        // (dependency types are stubbed on demand).
+        let mut types = HashSet::new();
+        while let Some((addr, module_name, name)) = pending.pop() {
+            if !ctx.main_addrs.contains(&addr) || !types.insert((addr, module_name, name)) {
+                continue;
+            }
+            let Some(module) = mains
+                .iter()
+                .find(|(a, _, _)| *a == addr)
+                .and_then(|(_, summary, _)| summary.packages.packages.get(&addr))
+                .and_then(|pkg| pkg.modules.get(&module_name))
+            else {
+                continue;
+            };
+            if let Some(s) = module.structs.get(&name) {
+                for field in s.fields.fields.values() {
+                    collect_datatypes(&field.type_, ctx, &mut pending);
+                }
+            }
+            if let Some(e) = module.enums.get(&name) {
+                for variant in e.variants.values() {
+                    for field in variant.fields.fields.values() {
+                        collect_datatypes(&field.type_, ctx, &mut pending);
+                    }
+                }
+            }
+        }
+
+        Ok(Selection { funs, types })
     }
 
     fn generate_stubs_multi(
@@ -829,7 +1011,7 @@ impl LocalCodegen {
 
                 module_tokens.push(quote! {
                     pub mod #module_ident {
-                        use move_types::{MoveType, Address, Identifier, StructTag};
+                        use move_types::{MoveType, Address, Identifier};
                         pub const PACKAGE_ID: Address = Address::from_static(#pkg_addr_hex);
                         pub const MODULE_NAME: &str = #module_name_str;
                         #(#type_tokens)*
@@ -868,27 +1050,9 @@ impl LocalCodegen {
         };
         let type_sym = move_symbol_pool::Symbol::from(type_name);
         if let Some(s) = module.structs.get(&type_sym) {
-            // Keep None placeholders so a slice index lines up with the original
-            // type-parameter index.
-            let type_param_names: Vec<_> =
-                s.type_parameters.iter().map(|tp| tp.tparam.name).collect();
-            let type_params: Vec<_> = s.type_parameters.iter().map(|tp| tp.phantom).collect();
-            let fields: Vec<_> = s
-                .fields
-                .fields
-                .iter()
-                .map(|(name, field)| {
-                    (
-                        escape_keyword(name),
-                        field
-                            .type_
-                            .to_rust_type_with_context(ctx, &type_param_names),
-                    )
-                })
-                .collect();
             return StubDef {
-                type_params,
-                fields,
+                type_params: s.type_parameters.iter().map(|tp| tp.phantom).collect(),
+                fields: struct_fields(s, ctx),
             };
         }
         // Enums: fall back to phantom-only stub (no fields). This stub is incorrect for
@@ -909,7 +1073,6 @@ impl LocalCodegen {
         origin_addr_hex: &str,
     ) -> Result<TokenStream, anyhow::Error> {
         let type_ident = Ident::new(type_name, proc_macro2::Span::call_site());
-        let name_str = type_name.to_string();
         let type_param_count = def.type_params.len();
 
         let field_tokens: Vec<_> = def
@@ -963,10 +1126,6 @@ impl LocalCodegen {
                 })
                 .collect();
 
-            let type_calls: Vec<_> = type_params.iter().map(|t| quote! { #t::type_() }).collect();
-
-            let _ = type_calls;
-            let _ = name_str;
             let all_phantom = def.type_params.iter().all(|p| *p);
             let serde_bound = if all_phantom {
                 quote! { #[serde(bound(serialize = "", deserialize = ""))] }
@@ -989,9 +1148,11 @@ impl LocalCodegen {
         structs: &indexmap::IndexMap<move_symbol_pool::Symbol, move_model_2::summary::Struct>,
         type_origin_ids: &HashMap<String, AccountAddress>,
         ctx: &CodegenCtx,
+        keep: &dyn Fn(&str) -> bool,
     ) -> Result<Vec<TokenStream>, anyhow::Error> {
         structs
             .iter()
+            .filter(|(name, _)| keep(name.as_str()))
             .map(|(name, move_struct)| {
                 Self::create_struct(name.as_str(), move_struct, type_origin_ids, ctx)
             })
@@ -1021,23 +1182,12 @@ impl LocalCodegen {
             },
         );
 
-        let struct_ident = Ident::new(&struct_name.to_string(), proc_macro2::Span::call_site());
-        let type_param_names: Vec<_> = move_struct
-            .type_parameters
-            .iter()
-            .map(|tp| tp.tparam.name)
-            .collect();
-        let field_tokens = move_struct
-            .fields
-            .fields
-            .iter()
-            .map(|(name, field)| {
-                let field_ident = Ident::new(&escape_keyword(name), proc_macro2::Span::call_site());
-                let field_type: syn::Type = syn::parse_str(
-                    &field
-                        .type_
-                        .to_rust_type_with_context(ctx, &type_param_names),
-                )?;
+        let struct_ident = Ident::new(struct_name, proc_macro2::Span::call_site());
+        let field_tokens = struct_fields(move_struct, ctx)
+            .into_iter()
+            .map(|(name, rust_type)| {
+                let field_ident = Ident::new(&name, proc_macro2::Span::call_site());
+                let field_type: syn::Type = syn::parse_str(&rust_type)?;
                 Ok(quote! {pub #field_ident: #field_type,})
             })
             .collect::<Result<Vec<_>, anyhow::Error>>()?;
@@ -1049,17 +1199,7 @@ impl LocalCodegen {
             quote! {MoveStruct},
         ];
 
-        // hack: because move_model_2::summary::AbilitySet contents are private
-        let has_key = serde_json::to_value(&move_struct.abilities)?
-            .as_array()
-            .context("incorrect abilities structure")?
-            .iter()
-            .filter_map(|v| v.as_str())
-            .map(|v| v.to_string())
-            .collect::<Vec<String>>()
-            .contains(&"Key".to_string());
-
-        if has_key {
+        if has_key_ability(&move_struct.abilities)? {
             derives.push(quote! {Key});
         }
 
@@ -1088,9 +1228,11 @@ impl LocalCodegen {
         enums: &indexmap::IndexMap<move_symbol_pool::Symbol, move_model_2::summary::Enum>,
         type_origin_ids: &HashMap<String, AccountAddress>,
         ctx: &CodegenCtx,
+        keep: &dyn Fn(&str) -> bool,
     ) -> Vec<TokenStream> {
         enums
             .iter()
+            .filter(|(name, _)| keep(name.as_str()))
             .map(|(name, move_enum)| {
                 Self::create_enum(name.as_str(), move_enum, type_origin_ids, ctx)
             })
@@ -1103,7 +1245,7 @@ impl LocalCodegen {
         type_origin_id: &HashMap<String, AccountAddress>,
         ctx: &CodegenCtx,
     ) -> TokenStream {
-        let enum_ident = Ident::new(&enum_name.to_string(), proc_macro2::Span::call_site());
+        let enum_ident = Ident::new(enum_name, proc_macro2::Span::call_site());
         let variant_tokens = move_enum.variants.iter().map(|(k, variant)| {
             let variant_ident = Ident::new(&escape_keyword(&k), proc_macro2::Span::call_site());
 
@@ -1159,9 +1301,11 @@ impl LocalCodegen {
     fn create_funs(
         funs: &indexmap::IndexMap<move_symbol_pool::Symbol, move_model_2::summary::Function>,
         ctx: &CodegenCtx,
+        keep: &dyn Fn(&str) -> bool,
     ) -> Vec<TokenStream> {
         funs.iter()
-            .flat_map(|(name, fun)| Self::create_fun(name.as_str(), fun, ctx))
+            .filter(|(name, _)| keep(name.as_str()))
+            .map(|(name, fun)| Self::create_fun(name.as_str(), fun, ctx))
             .collect()
     }
 
@@ -1169,27 +1313,18 @@ impl LocalCodegen {
         fun_name: &str,
         fun: &move_model_2::summary::Function,
         ctx: &CodegenCtx,
-    ) -> Option<TokenStream> {
+    ) -> TokenStream {
         let type_param_names: Vec<_> = fun.type_parameters.iter().map(|tp| tp.name).collect();
 
         let (param_names, mut params, need_lifetime) = fun.parameters.iter().enumerate().fold(
             (vec![], vec![], false),
             |(mut param_names, mut params, mut lifetime), (i, param)| {
-                // TODO - hack: necessary because param fields are private
-                // move_model_2::summary::Parameter
-                let hack = serde_json::to_value(param).unwrap();
-                let field_ident = hack
-                    .get("name")
-                    .and_then(|v| v.as_str())
-                    .map(|name| Ident::new(&escape_keyword(name), proc_macro2::Span::call_site()))
+                let field_ident = param_name(param)
+                    .map(|name| Ident::new(&escape_keyword(&name), proc_macro2::Span::call_site()))
                     .unwrap_or_else(|| {
                         Ident::new(&format!("p{i}"), proc_macro2::Span::call_site())
                     });
-                let type_ = {
-                    let type_attr = hack.get("type_").unwrap();
-                    serde_json::from_value::<move_model_2::summary::Type>(type_attr.clone())
-                        .unwrap()
-                };
+                let type_ = param_type(param).unwrap();
 
                 lifetime = lifetime || type_.is_ref();
                 if let move_model_2::summary::Type::Reference(_, to) = &type_ {
@@ -1230,19 +1365,12 @@ impl LocalCodegen {
             })
             .collect::<Vec<_>>();
 
-        let (types, mut types_with_ability) = fun.type_parameters.iter().enumerate().fold(
-            (vec![], vec![]),
-            |(mut types, mut types_with_ability), (i, _v)| {
-                let ident = Ident::new(&format!("T{i}"), proc_macro2::Span::call_site());
-                types.push(ident.clone());
-                let mut abilities = vec![];
-                // Note: summary::TParam doesn't have the same ability methods as normalized
-                // For now, just use MoveType as default
-                abilities.push(quote! {MoveType});
-                types_with_ability.push(quote! {#ident: #(#abilities)+*});
-                (types, types_with_ability)
-            },
-        );
+        let types: Vec<_> = (0..fun.type_parameters.len())
+            .map(|i| Ident::new(&format!("T{i}"), proc_macro2::Span::call_site()))
+            .collect();
+        // summary::TParam doesn't expose abilities like the normalized types do,
+        // so every type parameter is just bounded by MoveType.
+        let mut types_with_ability: Vec<_> = types.iter().map(|t| quote! {#t: MoveType}).collect();
 
         if need_lifetime || fun.return_.iter().any(|t| t.is_ref()) {
             types_with_ability.insert(0, quote! {'a})
@@ -1297,13 +1425,58 @@ impl LocalCodegen {
             }
         };
 
-        let fun_impl = quote! {
+        quote! {
             #sig {
                 #body
             }
-        };
-        Some(fun_impl)
+        }
     }
+}
+
+// `summary::AbilitySet` has no public accessor, so read it via serde.
+fn has_key_ability(abilities: &move_model_2::summary::AbilitySet) -> Result<bool, anyhow::Error> {
+    Ok(serde_json::to_value(abilities)?
+        .as_array()
+        .context("incorrect abilities structure")?
+        .iter()
+        .any(|v| v.as_str() == Some("Key")))
+}
+
+/// `(escaped field name, Rust type)` for each field of `s`.
+fn struct_fields(
+    s: &move_model_2::summary::Struct,
+    ctx: &CodegenCtx,
+) -> Vec<(String, String)> {
+    let type_param_names: Vec<_> = s.type_parameters.iter().map(|tp| tp.tparam.name).collect();
+    s.fields
+        .fields
+        .iter()
+        .map(|(name, field)| {
+            (
+                escape_keyword(name),
+                field
+                    .type_
+                    .to_rust_type_with_context(ctx, &type_param_names),
+            )
+        })
+        .collect()
+}
+
+// `move_model_2::summary::Parameter` has private fields, so read them via serde.
+fn param_name(param: &move_model_2::summary::Parameter) -> Option<String> {
+    serde_json::to_value(param)
+        .ok()?
+        .get("name")?
+        .as_str()
+        .map(str::to_string)
+}
+
+fn param_type(
+    param: &move_model_2::summary::Parameter,
+) -> Result<move_model_2::summary::Type, anyhow::Error> {
+    let value = serde_json::to_value(param)?;
+    let type_ = value.get("type_").context("parameter has no type")?;
+    Ok(serde_json::from_value(type_.clone())?)
 }
 
 #[cfg(test)]

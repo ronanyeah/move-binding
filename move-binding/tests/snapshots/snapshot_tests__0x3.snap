@@ -6240,7 +6240,7 @@ pub mod sui_system {
     pub mod move_std {
         pub mod ascii {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6262,7 +6262,7 @@ pub mod sui_system {
         }
         pub mod bit_vector {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6278,7 +6278,7 @@ pub mod sui_system {
         }
         pub mod fixed_point32 {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6293,7 +6293,7 @@ pub mod sui_system {
         }
         pub mod internal {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6309,7 +6309,7 @@ pub mod sui_system {
         }
         pub mod option {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6324,7 +6324,7 @@ pub mod sui_system {
         }
         pub mod string {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6339,7 +6339,7 @@ pub mod sui_system {
         }
         pub mod type_name {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6354,7 +6354,7 @@ pub mod sui_system {
         }
         pub mod uq32_32 {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6369,7 +6369,7 @@ pub mod sui_system {
         }
         pub mod uq64_64 {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
             );
@@ -6386,7 +6386,7 @@ pub mod sui_system {
     pub mod sui {
         pub mod accumulator {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6416,7 +6416,7 @@ pub mod sui_system {
         }
         pub mod accumulator_metadata {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6462,7 +6462,7 @@ pub mod sui_system {
         }
         pub mod accumulator_settlement {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6479,7 +6479,7 @@ pub mod sui_system {
         }
         pub mod address_alias {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6510,7 +6510,7 @@ pub mod sui_system {
         }
         pub mod allowance {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6606,7 +6606,7 @@ pub mod sui_system {
         }
         pub mod authenticator_state {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6659,7 +6659,7 @@ pub mod sui_system {
         }
         pub mod bag {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6675,7 +6675,7 @@ pub mod sui_system {
         }
         pub mod balance {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6699,7 +6699,7 @@ pub mod sui_system {
         }
         pub mod bcs {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6714,7 +6714,7 @@ pub mod sui_system {
         }
         pub mod bls12381 {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6757,7 +6757,7 @@ pub mod sui_system {
         }
         pub mod borrow {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6781,7 +6781,7 @@ pub mod sui_system {
         }
         pub mod clock {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6797,7 +6797,7 @@ pub mod sui_system {
         }
         pub mod coin {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6871,7 +6871,7 @@ pub mod sui_system {
         }
         pub mod coin_registry {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -6989,7 +6989,7 @@ pub mod sui_system {
         }
         pub mod config {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7021,7 +7021,7 @@ pub mod sui_system {
         }
         pub mod deny_list {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7086,7 +7086,7 @@ pub mod sui_system {
         }
         pub mod derived_object {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7115,7 +7115,7 @@ pub mod sui_system {
         }
         pub mod display {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7151,7 +7151,7 @@ pub mod sui_system {
         }
         pub mod display_registry {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7199,7 +7199,7 @@ pub mod sui_system {
         }
         pub mod dynamic_field {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7216,7 +7216,7 @@ pub mod sui_system {
         }
         pub mod dynamic_object_field {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7231,7 +7231,7 @@ pub mod sui_system {
         }
         pub mod forwarding_address {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7246,7 +7246,7 @@ pub mod sui_system {
         }
         pub mod funds_accumulator {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7263,7 +7263,7 @@ pub mod sui_system {
         }
         pub mod groth16 {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7302,7 +7302,7 @@ pub mod sui_system {
         }
         pub mod group_ops {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7318,7 +7318,7 @@ pub mod sui_system {
         }
         pub mod kiosk {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7417,7 +7417,7 @@ pub mod sui_system {
         }
         pub mod kiosk_extension {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7442,7 +7442,7 @@ pub mod sui_system {
         }
         pub mod linked_table {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7470,7 +7470,7 @@ pub mod sui_system {
         }
         pub mod nitro_attestation {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7499,7 +7499,7 @@ pub mod sui_system {
         }
         pub mod object {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7521,7 +7521,7 @@ pub mod sui_system {
         }
         pub mod object_bag {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7537,7 +7537,7 @@ pub mod sui_system {
         }
         pub mod object_table {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7555,7 +7555,7 @@ pub mod sui_system {
         }
         pub mod package {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7600,7 +7600,7 @@ pub mod sui_system {
         }
         pub mod party {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7626,7 +7626,7 @@ pub mod sui_system {
         }
         pub mod priority_queue {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7649,7 +7649,7 @@ pub mod sui_system {
         }
         pub mod random {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7684,7 +7684,7 @@ pub mod sui_system {
         }
         pub mod ristretto255 {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7706,7 +7706,7 @@ pub mod sui_system {
         }
         pub mod scratch {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7737,7 +7737,7 @@ pub mod sui_system {
         }
         pub mod sui {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7752,7 +7752,7 @@ pub mod sui_system {
         }
         pub mod table {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7770,7 +7770,7 @@ pub mod sui_system {
         }
         pub mod table_vec {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7786,7 +7786,7 @@ pub mod sui_system {
         }
         pub mod token {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7855,7 +7855,7 @@ pub mod sui_system {
         }
         pub mod transfer {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7872,7 +7872,7 @@ pub mod sui_system {
         }
         pub mod transfer_policy {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7936,7 +7936,7 @@ pub mod sui_system {
         }
         pub mod tx_context {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7955,7 +7955,7 @@ pub mod sui_system {
         }
         pub mod url {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7970,7 +7970,7 @@ pub mod sui_system {
         }
         pub mod vec_map {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -7993,7 +7993,7 @@ pub mod sui_system {
         }
         pub mod vec_set {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -8008,7 +8008,7 @@ pub mod sui_system {
         }
         pub mod versioned {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -8032,7 +8032,7 @@ pub mod sui_system {
         }
         pub mod zklogin_verified_id {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );
@@ -8052,7 +8052,7 @@ pub mod sui_system {
         }
         pub mod zklogin_verified_issuer {
             use move_binding_derive::{MoveStruct, Key};
-            use move_types::{MoveType, Address, Identifier, StructTag};
+            use move_types::{MoveType, Address, Identifier};
             pub const PACKAGE_ID: Address = Address::from_static(
                 "0x0000000000000000000000000000000000000000000000000000000000000002",
             );

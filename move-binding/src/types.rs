@@ -91,17 +91,11 @@ impl ToRustTypeWithContext for move_model_2::summary::Type {
                 format!("Vec<{}>", t.to_rust_type_with_context(ctx, type_params))
             }
             Self::Reference(mutable, to) => {
-                if *mutable {
-                    format!(
-                        "&'static mut {}",
-                        to.to_rust_type_with_context(ctx, type_params)
-                    )
-                } else {
-                    format!(
-                        "&'static {}",
-                        to.to_rust_type_with_context(ctx, type_params)
-                    )
-                }
+                let mut_ = if *mutable { "mut " } else { "" };
+                format!(
+                    "&'static {mut_}{}",
+                    to.to_rust_type_with_context(ctx, type_params)
+                )
             }
             Self::TypeParameter(index) => format!("T{index}"),
             Self::NamedTypeParameter(name) => {
@@ -131,17 +125,11 @@ impl ToRustTypeWithContext for move_model_2::summary::Type {
     ) -> String {
         match self {
             Self::Reference(mutable, to) => {
-                if *mutable {
-                    format!(
-                        "MutRef<'a, {}>",
-                        to.to_rust_type_with_context(ctx, type_params)
-                    )
-                } else {
-                    format!(
-                        "Ref<'a, {}>",
-                        to.to_rust_type_with_context(ctx, type_params)
-                    )
-                }
+                let wrapper = if *mutable { "MutRef" } else { "Ref" };
+                format!(
+                    "{wrapper}<'a, {}>",
+                    to.to_rust_type_with_context(ctx, type_params)
+                )
             }
             _ => format!("Arg<{}>", self.to_rust_type_with_context(ctx, type_params)),
         }
@@ -150,38 +138,7 @@ impl ToRustTypeWithContext for move_model_2::summary::Type {
 
 impl ToRustType for move_model_2::summary::Type {
     fn to_rust_type(&self, ctx: &CodegenCtx) -> String {
-        match self {
-            Self::Bool => "bool".to_string(),
-            Self::U8 => "u8".to_string(),
-            Self::U16 => "u16".to_string(),
-            Self::U32 => "u32".to_string(),
-            Self::U64 => "u64".to_string(),
-            Self::U128 => "u128".to_string(),
-            Self::U256 => "move_types::U256".to_string(),
-            Self::Address => "Address".to_string(),
-            Self::Signer => "Address".to_string(),
-            t @ Self::Datatype { .. } => try_resolve_known_types_summary(t, ctx),
-            Self::Vector(t) => {
-                format!("Vec<{}>", t.to_rust_type(ctx))
-            }
-            Self::Reference(mutable, to) => {
-                if *mutable {
-                    format!("&'static mut {}", to.to_rust_type(ctx))
-                } else {
-                    format!("&'static {}", to.to_rust_type(ctx))
-                }
-            }
-            Self::TypeParameter(index) => format!("T{index}"),
-            Self::NamedTypeParameter(_name) => {
-                // Named type parameters should be mapped to T0, T1, etc.
-                // This requires context about the containing struct/function's type parameters
-                // For now, fallback to the name itself as a placeholder
-                "TypeParam".to_string()
-            }
-            Self::Tuple(_) => unimplemented!(),
-            Self::Fun(_, _) => unimplemented!(),
-            Self::Any => unimplemented!(),
-        }
+        self.to_rust_type_with_context(ctx, &[])
     }
 
     fn is_ref(&self) -> bool {
@@ -189,24 +146,8 @@ impl ToRustType for move_model_2::summary::Type {
     }
 
     fn to_arg_type(&self, ctx: &CodegenCtx) -> String {
-        match self {
-            Self::Reference(mutable, to) => {
-                if *mutable {
-                    format!("MutRef<'a, {}>", to.to_rust_type(ctx))
-                } else {
-                    format!("Ref<'a, {}>", to.to_rust_type(ctx))
-                }
-            }
-            _ => format!("Arg<{}>", self.to_rust_type(ctx)),
-        }
+        self.to_arg_type_with_context(ctx, &[])
     }
-}
-
-fn try_resolve_known_types_summary(
-    _type: &move_model_2::summary::Type,
-    ctx: &CodegenCtx,
-) -> String {
-    try_resolve_known_types_summary_with_context(_type, ctx, &[])
 }
 
 fn try_resolve_known_types_summary_with_context(

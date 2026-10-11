@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use clap::Parser;
 use move_binary_format::CompiledModule;
-use move_binding::move_codegen::LocalCodegen;
+use move_binding::move_codegen::{CodegenOptions, LocalCodegen};
 use move_core_types::account_address::AccountAddress;
 use move_model_2::compiled_model::Model;
 use move_symbol_pool::Symbol;
@@ -30,9 +30,28 @@ struct Cli {
     #[clap(short, long = "package", required = true)]
     packages: Vec<PackageRef>,
 
+    /// Only generate functions from these modules (comma-separated or repeated),
+    /// plus the types they reference. Applies to every `--package`.
+    #[clap(long, value_delimiter = ',')]
+    modules: Vec<String>,
+
+    /// Only generate this function, as `module::function` (repeatable), plus
+    /// the types it references. Combines with `--modules`.
+    #[clap(long = "include", value_parser = parse_include)]
+    include: Vec<(String, String)>,
+
     /// Output file. Defaults to `./bindings.rs`.
     #[clap(short, long, default_value = "./bindings.rs")]
     output: PathBuf,
+}
+
+fn parse_include(s: &str) -> Result<(String, String), String> {
+    match s.split_once("::") {
+        Some((m, f)) if !m.is_empty() && !f.is_empty() && !f.contains("::") => {
+            Ok((m.to_string(), f.to_string()))
+        }
+        _ => Err(format!("expected module::function, got '{s}'")),
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -117,7 +136,11 @@ impl std::str::FromStr for PackageRef {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    let markup = handle_packages(&cli.base_path, cli.network, cli.packages)?;
+    let options = CodegenOptions {
+        modules: cli.modules,
+        functions: cli.include,
+    };
+    let markup = handle_packages(&cli.base_path, cli.network, cli.packages, &options)?;
 
     std::fs::File::create(&cli.output)?.write_all(markup.as_bytes())?;
     println!("Wrote bindings to {}", cli.output.display());
@@ -129,6 +152,7 @@ fn handle_packages(
     base_path: &str,
     network: Network,
     packages: Vec<PackageRef>,
+    options: &CodegenOptions,
 ) -> anyhow::Result<String> {
     let rt = Runtime::new().context("failed to create tokio runtime")?;
     // A single gRPC client for the whole run, created only when an on-chain
@@ -162,7 +186,7 @@ fn handle_packages(
 
     let inputs: Vec<(&_, &str)> = summaries.iter().map(|(s, a)| (s, a.as_str())).collect();
 
-    let stream = LocalCodegen::expand_multi(&inputs, base_path, Some(2))?;
+    let stream = LocalCodegen::expand_multi_with_options(&inputs, base_path, Some(2), options)?;
     let markup = prettyplease::unparse(&syn::parse2(stream)?);
 
     Ok(markup)
